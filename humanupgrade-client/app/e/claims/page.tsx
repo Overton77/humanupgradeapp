@@ -7,7 +7,7 @@ import {
   type ClaimSearchInput,
 } from '@/lib/gql'
 import { rscQuery } from '@/lib/apollo/queries'
-import { parseEntityIndexParams, paramsToApiPagination } from '@/lib/entity-index/params'
+import { parseEntityIndexParams, paramsToApiPagination, readEnumFilter } from '@/lib/entity-index/params'
 import type { FilterSpec } from '@/lib/entity-index/types'
 import { EntityIndexShell } from '@/components/entity-index/EntityIndexShell'
 import { EntityIndexControls } from '@/components/entity-index/EntityIndexControls'
@@ -18,30 +18,42 @@ import { ClaimIndexCard } from '@/components/entity-index/cards/ClaimIndexCard'
 export const metadata: Metadata = { title: 'Claims' }
 export const dynamic = 'force-dynamic'
 
+const STANCE_VALUES = [
+  ClaimStance.Supports,
+  ClaimStance.Opposes,
+  ClaimStance.Mixed,
+  ClaimStance.Neutral,
+] as const
+
+const CONFIDENCE_VALUES = [
+  ClaimConfidence.VeryHigh,
+  ClaimConfidence.High,
+  ClaimConfidence.Medium,
+  ClaimConfidence.Low,
+] as const
+
 const FILTERS: FilterSpec[] = [
   {
     kind: 'enum',
     param: 'stance',
     label: 'Stance',
     options: [
-      { value: 'SUPPORTS', label: 'Supports' },
-      { value: 'OPPOSES', label: 'Opposes' },
-      { value: 'MIXED', label: 'Mixed' },
-      { value: 'NEUTRAL', label: 'Neutral' },
+      { value: ClaimStance.Supports, label: 'Supports' },
+      { value: ClaimStance.Opposes, label: 'Opposes' },
+      { value: ClaimStance.Mixed, label: 'Mixed' },
+      { value: ClaimStance.Neutral, label: 'Neutral' },
     ],
-    toApiValue: (raw) => (raw ? raw : undefined),
   },
   {
     kind: 'enum',
     param: 'confidence',
     label: 'Confidence',
     options: [
-      { value: 'VERY_HIGH', label: 'Very high' },
-      { value: 'HIGH', label: 'High' },
-      { value: 'MEDIUM', label: 'Medium' },
-      { value: 'LOW', label: 'Low' },
+      { value: ClaimConfidence.VeryHigh, label: 'Very high' },
+      { value: ClaimConfidence.High, label: 'High' },
+      { value: ClaimConfidence.Medium, label: 'Medium' },
+      { value: ClaimConfidence.Low, label: 'Low' },
     ],
-    toApiValue: (raw) => (raw ? raw : undefined),
   },
 ]
 
@@ -57,8 +69,8 @@ export default async function ClaimsIndexPage({ searchParams }: Props) {
     query: pagination.query,
     limit: pagination.limit,
     offset: pagination.offset,
-    stance: FILTERS[0].toApiValue(current.filters.stance) as ClaimStance | undefined,
-    claimConfidence: FILTERS[1].toApiValue(current.filters.confidence) as ClaimConfidence | undefined,
+    stance: readEnumFilter(current, 'stance', STANCE_VALUES),
+    claimConfidence: readEnumFilter(current, 'confidence', CONFIDENCE_VALUES),
   }
 
   const data = await rscQuery(ListClaimsDocument, { input })

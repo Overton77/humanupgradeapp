@@ -75,3 +75,36 @@ function clampInt(raw: string | null, min: number, max: number, fallback: number
   if (!Number.isFinite(n)) return fallback
   return Math.max(min, Math.min(max, n))
 }
+
+/* ─── URL → API filter readers (server-side use) ─────────────────────────── */
+
+/**
+ * Read a boolean filter from parsed params. Convention: "true" → true,
+ * anything else (including "false", null, "") → undefined (filter omitted).
+ *
+ * If you need a tri-state ("true" / "false" / unset), call this twice or
+ * branch in the page directly — keeping this helper unambiguous.
+ */
+export function readBooleanFilter(
+  current: EntityIndexParams,
+  param: string,
+): boolean | undefined {
+  return current.filters[param] === 'true' ? true : undefined
+}
+
+/**
+ * Read an enum filter from parsed params, narrowing to the allowed values.
+ * Returns undefined if absent or if the URL contains a value not in `allowed`.
+ *
+ * The `allowed` array is usually the values from your enum spec / GraphQL
+ * codegen enum (e.g. `Object.values(ClaimStance)`).
+ */
+export function readEnumFilter<TValue extends string>(
+  current: EntityIndexParams,
+  param: string,
+  allowed: readonly TValue[],
+): TValue | undefined {
+  const raw = current.filters[param]
+  if (!raw) return undefined
+  return (allowed as readonly string[]).includes(raw) ? (raw as TValue) : undefined
+}

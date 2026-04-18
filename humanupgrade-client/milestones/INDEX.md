@@ -2,12 +2,14 @@
 
 Operational dashboard. The strategic view lives in [docs/10 — Scope & Roadmap](../docs/10-scope-roadmap.md).
 
+> 👉 **NEXT AGENT**: read [`HANDOFF.md`](./HANDOFF.md) first, then go to [`M1-auth-and-library-shell/plan.md`](./M1-auth-and-library-shell/plan.md).
+
 ## Status
 
 | ID | Name | Status | Plan | Started | Done |
 |---|---|---|---|---|---|
-| **M0** | Foundation (monorepo, Vercel, public entity pages) | ✅ done | [plan](M0-foundation/plan.md) · [delta](M0-foundation/delta.md) | 2026-04-17 | 2026-04-18 |
-| M1 | Auth & library shell (Clerk + saves + notes) | ⬜ — | — | — | — |
+| **M0** | Foundation (monorepo, Vercel, public entity pages, browse-by-default) | ✅ done | [plan](M0-foundation/plan.md) · [delta](M0-foundation/delta.md) | 2026-04-17 | 2026-04-18 |
+| **M1** | Auth bridge & library shell (Clerk → API + saves + notes + highlights) | ⬜ planning next | [plan starter](M1-auth-and-library-shell/plan.md) · [research](M1-auth-and-library-shell/research.md) · [refs](M1-auth-and-library-shell/references.md) | — | — |
 | M2 | Assistant v0 — interactive | ⬜ — | — | — | — |
 | M2.5 | Durable assistant (Workflow SDK) | ⬜ — | — | — | — |
 | M3 | Protocols + biomarkers + long-running AI tools | ⬜ — | — | — | — |

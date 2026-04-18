@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { ListProductsDocument, SearchMode, type ProductSearchInput } from '@/lib/gql'
 import { rscQuery } from '@/lib/apollo/queries'
-import { parseEntityIndexParams, paramsToApiPagination } from '@/lib/entity-index/params'
+import { parseEntityIndexParams, paramsToApiPagination, readBooleanFilter } from '@/lib/entity-index/params'
 import type { FilterSpec } from '@/lib/entity-index/types'
 import { EntityIndexShell } from '@/components/entity-index/EntityIndexShell'
 import { EntityIndexControls } from '@/components/entity-index/EntityIndexControls'
@@ -13,12 +13,7 @@ export const metadata: Metadata = { title: 'Products' }
 export const dynamic = 'force-dynamic'
 
 const FILTERS: FilterSpec[] = [
-  {
-    kind: 'boolean',
-    param: 'active',
-    label: 'Active only',
-    toApiValue: (raw) => (raw === 'true' ? true : undefined),
-  },
+  { kind: 'boolean', param: 'active', label: 'Active only' },
 ]
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
@@ -33,7 +28,7 @@ export default async function ProductsIndexPage({ searchParams }: Props) {
     query: pagination.query,
     limit: pagination.limit,
     offset: pagination.offset,
-    isActive: FILTERS[0].toApiValue(current.filters.active) as boolean | undefined,
+    isActive: readBooleanFilter(current, 'active'),
   }
 
   const data = await rscQuery(ListProductsDocument, { input })

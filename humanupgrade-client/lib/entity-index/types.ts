@@ -7,6 +7,11 @@
  *   - the card renderer (knows how to render one item)
  *
  * Each page file is therefore small and focused on its entity's specifics.
+ *
+ * IMPORTANT: FilterSpec MUST be fully serializable (no functions). It crosses
+ * the server→client boundary into <FilterBar /> via <EntityIndexControls />.
+ * URL→API conversion lives in `params.ts` helpers (`readBooleanFilter`,
+ * `readEnumFilter`) that page-level server code calls directly.
  */
 
 /** A boolean toggle filter, e.g. "Published only". */
@@ -16,11 +21,6 @@ export type BooleanFilterSpec = {
   param: string
   /** Visible label, e.g. "Published only". */
   label: string
-  /**
-   * Maps the URL string ("true" / "false" / null) into the API input value.
-   * Return `undefined` to omit the filter from the input.
-   */
-  toApiValue: (raw: string | null) => boolean | undefined
 }
 
 /** An enum filter rendered as a row of pills, e.g. ClaimStance. */
@@ -29,7 +29,6 @@ export type EnumFilterSpec<TValue extends string = string> = {
   param: string
   label: string
   options: { value: TValue; label: string }[]
-  toApiValue: (raw: string | null) => TValue | undefined
 }
 
 export type FilterSpec = BooleanFilterSpec | EnumFilterSpec

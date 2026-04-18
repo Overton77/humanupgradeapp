@@ -7,7 +7,12 @@ import {
   type EpisodeSearchInput,
 } from '@/lib/gql'
 import { rscQuery } from '@/lib/apollo/queries'
-import { parseEntityIndexParams, paramsToApiPagination } from '@/lib/entity-index/params'
+import {
+  parseEntityIndexParams,
+  paramsToApiPagination,
+  readBooleanFilter,
+  readEnumFilter,
+} from '@/lib/entity-index/params'
 import type { FilterSpec } from '@/lib/entity-index/types'
 import { EntityIndexShell } from '@/components/entity-index/EntityIndexShell'
 import { EntityIndexControls } from '@/components/entity-index/EntityIndexControls'
@@ -18,24 +23,25 @@ import { EpisodeIndexCard } from '@/components/entity-index/cards/EpisodeIndexCa
 export const metadata: Metadata = { title: 'Episodes' }
 export const dynamic = 'force-dynamic'
 
+const TRANSCRIPT_VALUES = [
+  TranscriptStatus.Stored,
+  TranscriptStatus.Queued,
+  TranscriptStatus.Missing,
+  TranscriptStatus.Error,
+] as const
+
 const FILTERS: FilterSpec[] = [
-  {
-    kind: 'boolean',
-    param: 'published',
-    label: 'Published only',
-    toApiValue: (raw) => (raw === 'true' ? true : undefined),
-  },
+  { kind: 'boolean', param: 'published', label: 'Published only' },
   {
     kind: 'enum',
     param: 'transcript',
     label: 'Transcript',
     options: [
-      { value: 'STORED', label: 'Stored' },
-      { value: 'QUEUED', label: 'Queued' },
-      { value: 'MISSING', label: 'Missing' },
-      { value: 'ERROR', label: 'Errored' },
+      { value: TranscriptStatus.Stored, label: 'Stored' },
+      { value: TranscriptStatus.Queued, label: 'Queued' },
+      { value: TranscriptStatus.Missing, label: 'Missing' },
+      { value: TranscriptStatus.Error, label: 'Errored' },
     ],
-    toApiValue: (raw) => (raw ? raw : undefined),
   },
 ]
 
@@ -51,8 +57,8 @@ export default async function EpisodesIndexPage({ searchParams }: Props) {
     query: pagination.query,
     limit: pagination.limit,
     offset: pagination.offset,
-    isPublished: FILTERS[0].toApiValue(current.filters.published) as boolean | undefined,
-    transcriptStatus: FILTERS[1].toApiValue(current.filters.transcript) as TranscriptStatus | undefined,
+    isPublished: readBooleanFilter(current, 'published'),
+    transcriptStatus: readEnumFilter(current, 'transcript', TRANSCRIPT_VALUES),
     publishStatus: PublishStatus.Ready, // index never shows hidden episodes
   }
 

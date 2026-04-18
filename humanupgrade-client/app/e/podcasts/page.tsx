@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { ListPodcastsDocument, SearchMode, type PodcastSearchInput } from '@/lib/gql'
 import { rscQuery } from '@/lib/apollo/queries'
-import { parseEntityIndexParams, paramsToApiPagination } from '@/lib/entity-index/params'
+import { parseEntityIndexParams, paramsToApiPagination, readBooleanFilter } from '@/lib/entity-index/params'
 import type { FilterSpec } from '@/lib/entity-index/types'
 import { EntityIndexShell } from '@/components/entity-index/EntityIndexShell'
 import { EntityIndexControls } from '@/components/entity-index/EntityIndexControls'
@@ -13,12 +13,7 @@ export const metadata: Metadata = { title: 'Podcasts' }
 export const dynamic = 'force-dynamic'
 
 const FILTERS: FilterSpec[] = [
-  {
-    kind: 'boolean',
-    param: 'published',
-    label: 'Published only',
-    toApiValue: (raw) => (raw === 'true' ? true : undefined),
-  },
+  { kind: 'boolean', param: 'published', label: 'Published only' },
 ]
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
@@ -33,7 +28,7 @@ export default async function PodcastsIndexPage({ searchParams }: Props) {
     query: pagination.query,
     limit: pagination.limit,
     offset: pagination.offset,
-    isPublished: FILTERS[0].toApiValue(current.filters.published) as boolean | undefined,
+    isPublished: readBooleanFilter(current, 'published'),
   }
 
   const data = await rscQuery(ListPodcastsDocument, { input })

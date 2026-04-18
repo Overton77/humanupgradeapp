@@ -6,7 +6,7 @@ import {
   type OrganizationSearchInput,
 } from '@/lib/gql'
 import { rscQuery } from '@/lib/apollo/queries'
-import { parseEntityIndexParams, paramsToApiPagination } from '@/lib/entity-index/params'
+import { parseEntityIndexParams, paramsToApiPagination, readEnumFilter } from '@/lib/entity-index/params'
 import type { FilterSpec } from '@/lib/entity-index/types'
 import { EntityIndexShell } from '@/components/entity-index/EntityIndexShell'
 import { EntityIndexControls } from '@/components/entity-index/EntityIndexControls'
@@ -17,21 +17,30 @@ import { OrganizationIndexCard } from '@/components/entity-index/cards/Organizat
 export const metadata: Metadata = { title: 'Organizations' }
 export const dynamic = 'force-dynamic'
 
+const ORG_TYPE_VALUES = [
+  OrganizationType.Brand,
+  OrganizationType.Manufacturer,
+  OrganizationType.Lab,
+  OrganizationType.Clinic,
+  OrganizationType.ResearchInstitution,
+  OrganizationType.Media,
+  OrganizationType.Sponsor,
+] as const
+
 const FILTERS: FilterSpec[] = [
   {
     kind: 'enum',
     param: 'type',
     label: 'Type',
     options: [
-      { value: 'BRAND', label: 'Brand' },
-      { value: 'MANUFACTURER', label: 'Manufacturer' },
-      { value: 'LAB', label: 'Lab' },
-      { value: 'CLINIC', label: 'Clinic' },
-      { value: 'RESEARCH_INSTITUTION', label: 'Research' },
-      { value: 'MEDIA', label: 'Media' },
-      { value: 'SPONSOR', label: 'Sponsor' },
+      { value: OrganizationType.Brand, label: 'Brand' },
+      { value: OrganizationType.Manufacturer, label: 'Manufacturer' },
+      { value: OrganizationType.Lab, label: 'Lab' },
+      { value: OrganizationType.Clinic, label: 'Clinic' },
+      { value: OrganizationType.ResearchInstitution, label: 'Research' },
+      { value: OrganizationType.Media, label: 'Media' },
+      { value: OrganizationType.Sponsor, label: 'Sponsor' },
     ],
-    toApiValue: (raw) => (raw ? raw : undefined),
   },
 ]
 
@@ -47,7 +56,7 @@ export default async function OrganizationsIndexPage({ searchParams }: Props) {
     query: pagination.query,
     limit: pagination.limit,
     offset: pagination.offset,
-    organizationType: FILTERS[0].toApiValue(current.filters.type) as OrganizationType | undefined,
+    organizationType: readEnumFilter(current, 'type', ORG_TYPE_VALUES),
   }
 
   const data = await rscQuery(ListOrganizationsDocument, { input })
