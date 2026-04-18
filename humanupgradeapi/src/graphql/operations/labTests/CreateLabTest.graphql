@@ -1,0 +1,8 @@
+mutation CreateLabTest($data: LabTestCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createLabTest(data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    labName
+  }
+}

@@ -1,0 +1,17 @@
+query GetPodcast($id: ID, $slug: String) {
+  podcast(id: $id, slug: $slug) {
+    id
+    slug
+    title
+    subtitle
+    description
+    rssUrl
+    websiteUrl
+    hostName
+    language
+    isPublished
+    tags
+    createdAt
+    updatedAt
+  }
+}

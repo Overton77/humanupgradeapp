@@ -1,0 +1,7 @@
+mutation DeleteLabTest($where: LabTestWhereUniqueInput!) {
+  deleteLabTest(where: $where) {
+    id
+    slug
+    name
+  }
+}

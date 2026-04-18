@@ -1,0 +1,15 @@
+mutation CreateClaim(
+  $data: ClaimCreateInput!
+  $embedding: EmbeddingWriteOptionsInput
+) {
+  createClaim(data: $data, embedding: $embedding) {
+    id
+    episodeId
+    speakerId
+    probableSpeaker
+    text
+    claimType
+    stance
+    claimConfidence
+  }
+}

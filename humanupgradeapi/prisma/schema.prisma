@@ -1,0 +1,556 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  LINK
+  OTHER
+}
+
+enum ClaimType {
+  FACTUAL
+  CAUSAL
+  MECHANISTIC
+  MECHANISM_BIOLOGICAL
+  STATISTICAL
+  ANECDOTAL
+  RECOMMENDATION
+  CLINICAL_APPLICATION
+  SAFETY_RISK
+  INTERVENTION_PROTOCOL
+  INTERVENTION_TECHNOLOGY
+  PRODUCT_CLAIM
+  OTHER
+}
+
+enum ClaimStance {
+  SUPPORTS
+  OPPOSES
+  ASSERTED
+  NEUTRAL
+  MIXED
+  SUGGESTED
+  ANECDOTAL
+  UNKNOWN
+}
+
+enum ClaimConfidence {
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+  UNKNOWN
+}
+
+enum OrganizationType {
+  BRAND
+  MANUFACTURER
+  RETAILER
+  LAB
+  CLINIC
+  RESEARCH_INSTITUTION
+  NONPROFIT
+  MEDIA
+  SPONSOR
+  HOLDING_COMPANY
+  OTHER
+}
+
+enum TranscriptStatus {
+  MISSING
+  QUEUED
+  STORED
+  ERROR
+}
+
+enum PipelineStatus {
+  NOT_STARTED
+  RUNNING
+  COMPLETE
+  ERROR
+}
+
+enum PublishStatus {
+  HIDDEN
+  READY
+}
+
+enum EmbeddingStatus {
+  MISSING
+  READY
+  STALE
+  ERROR
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model Podcast {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  subtitle    String?
+  description String?
+  rssUrl      String?
+  websiteUrl  String?
+  hostName    String?
+  language    String?
+  isPublished Boolean  @default(false)
+  tags        String[] @default([])
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  episodes Episode[]
+  media    Media[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([title])
+  @@index([searchVector], type: Gin, map: "Podcast_search_vector_idx")
+}
+
+model Episode {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  podcastId String
+  podcast   Podcast @relation(fields: [podcastId], references: [id], onDelete: Cascade)
+
+  // Core fields
+  title               String
+  episodeNumber       Int?
+  seasonNumber        Int?
+  channelName         String?
+  summary             String?
+  description         String?
+  transcript          String?
+  transcriptSourceUrl String?
+  audioUrl            String?
+  videoUrl            String?
+  publishedAt         DateTime?
+  durationSeconds     Int?
+  isPublished         Boolean   @default(false)
+
+  // Summaries
+  webPageSummary   String?
+  summaryShort     String?
+  summaryDetailed  String?
+  publishedSummary String?
+
+  // URLs
+  episodePageUrl       String? @unique
+  episodeTranscriptUrl String?
+
+  // YouTube
+  youtubeVideoId  String?
+  youtubeEmbedUrl String?
+  youtubeWatchUrl String?
+
+  // S3 transcript storage
+  s3TranscriptKey         String?
+  s3TranscriptUrl         String?
+  transcriptStatus        TranscriptStatus @default(MISSING)
+  transcriptSha256        String?
+  transcriptLastAttemptAt DateTime?
+  transcriptErrorMessage  String?
+  transcriptErrorAt       DateTime?
+  transcriptStorageProvider String?
+  transcriptStorageBucket   String?
+  transcriptStorageKey      String?
+
+  // Topic cluster (flattened from Mongo subdocument)
+  topicPrimary   String?
+  topicSecondary String[] @default([])
+  topicConcepts  String[] @default([])
+
+  // Enrichment pipeline (flattened from Mongo subdocument)
+  enrichmentStage1Status      PipelineStatus @default(NOT_STARTED)
+  enrichmentStage1CompletedAt DateTime?
+  enrichmentStage1RunId       String?
+  enrichmentStage2Status      PipelineStatus @default(NOT_STARTED)
+  enrichmentStage2CompletedAt DateTime?
+  enrichmentStage2RunId       String?
+
+  // Publish state
+  publishStatus PublishStatus @default(HIDDEN)
+
+  // Web page timelines (stored as JSON for simple display-only list)
+  webPageTimelines Json?
+
+  // String arrays
+  tags         String[] @default([])
+  keyTakeaways String[] @default([])
+  topics       String[] @default([])
+
+  // Relations
+  sponsorOrganizations Organization[] @relation("EpisodeSponsors")
+  guests               Person[]       @relation("EpisodeGuests")
+  claims               Claim[]
+  media                Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([podcastId, episodeNumber])
+  @@index([podcastId])
+  @@index([publishedAt])
+  @@index([title])
+  @@index([transcriptStatus])
+  @@index([enrichmentStage1Status])
+  @@index([publishStatus])
+  @@index([searchVector], type: Gin, map: "Episode_search_vector_idx")
+}
+
+model Claim {
+  id        String  @id @default(cuid())
+  episodeId String
+  episode   Episode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  speakerId String?
+  speaker   Person? @relation("ClaimSpeaker", fields: [speakerId], references: [id], onDelete: SetNull)
+  probableSpeaker String?
+
+  text             String
+  evidenceExcerpt  String?
+  claimType        ClaimType       @default(OTHER)
+  stance           ClaimStance     @default(UNKNOWN)
+  claimConfidence  ClaimConfidence @default(UNKNOWN)
+  startTimeSeconds Int?
+  endTimeSeconds   Int?
+  sourceUrl        String?
+
+  tags         String[] @default([])
+  evidenceUrls String[] @default([])
+
+  media Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([episodeId])
+  @@index([speakerId])
+  @@index([claimType])
+  @@index([stance])
+  @@index([searchVector], type: Gin, map: "Claim_search_vector_idx")
+}
+
+model Person {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  fullName    String
+  firstName   String?
+  lastName    String?
+  title       String?
+  bio         String?
+  websiteUrl  String?
+  linkedinUrl String?
+  xUrl        String?
+
+  aliases        String[] @default([])
+  expertiseAreas String[] @default([])
+
+  guestEpisodes  Episode[] @relation("EpisodeGuests")
+  spokenClaims   Claim[]   @relation("ClaimSpeaker")
+
+  ownedOrganizations     Organization[] @relation("OrganizationOwners")
+  executiveOrganizations Organization[] @relation("OrganizationExecutives")
+
+  media Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fullName])
+  @@index([searchVector], type: Gin, map: "Person_search_vector_idx")
+}
+
+model Organization {
+  id               String           @id @default(cuid())
+  slug             String           @unique
+  name             String
+  legalName        String?
+  description      String?
+  websiteUrl       String?
+  headquarters     String?
+  foundedYear      Int?
+  annualRevenue    Float?
+  stockTicker      String?
+  employeeCount    Int?
+  organizationType OrganizationType @default(OTHER)
+
+  tags    String[] @default([])
+  aliases String[] @default([])
+  domains String[] @default([])
+
+  products   Product[]
+  owners     Person[] @relation("OrganizationOwners")
+  executives Person[] @relation("OrganizationExecutives")
+  labTests   LabTest[]
+
+  sponsoredEpisodes      Episode[]   @relation("EpisodeSponsors")
+  referencedCaseStudies  CaseStudy[] @relation("OrganizationReferencedCaseStudies")
+  businessSponsoredCases CaseStudy[] @relation("CaseStudyBusinessSponsors")
+
+  media Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([organizationType])
+  @@index([searchVector], type: Gin, map: "Organization_search_vector_idx")
+}
+
+model Product {
+  id                     String        @id @default(cuid())
+  slug                   String        @unique
+  organizationId         String?
+  organization           Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  isLabTestPanelDefinition Boolean?
+  name                   String
+  recommendedUse         String?
+  description            String?
+  category               String?
+  sku                    String?
+  productUrl             String?
+  price                  Decimal?      @db.Decimal(10, 2)
+  currency               String?       @default("USD")
+  isActive               Boolean       @default(true)
+
+  tags       String[] @default([])
+  categories String[] @default([])
+  benefits   String[] @default([])
+
+  containsCompounds Compound[]
+  labTests          LabTest[]
+  media             Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([name])
+  @@index([sku])
+  @@index([searchVector], type: Gin, map: "Product_search_vector_idx")
+}
+
+model Compound {
+  id            String  @id @default(cuid())
+  slug          String  @unique
+  name          String
+  description   String?
+  canonicalName String?
+  externalRef   String?
+
+  aliases    String[] @default([])
+  mechanisms String[] @default([])
+
+  products   Product[]
+  biomarkers Biomarker[] @relation("CompoundBiomarkerAssociations")
+  media      Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([searchVector], type: Gin, map: "Compound_search_vector_idx")
+}
+
+model LabTest {
+  id        String  @id @default(cuid())
+  slug      String  @unique
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  name        String
+  description String?
+  labName     String?
+  reportUrl   String?
+  testedAt    DateTime?
+  sampleType  String?
+
+  tags String[] @default([])
+
+  testsBiomarkers Biomarker[] @relation("LabTestBiomarkers")
+  media           Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([organizationId])
+  @@index([testedAt])
+  @@index([name])
+  @@index([searchVector], type: Gin, map: "LabTest_search_vector_idx")
+}
+
+model Biomarker {
+  id               String  @id @default(cuid())
+  slug             String  @unique
+  name             String
+  description      String?
+  unit             String?
+  category         String?
+  referenceRange   String?
+  referenceAgeMin  Int?
+  referenceAgeMax  Int?
+  referenceRangeLow Float?
+  referenceRangeMax Float?
+
+  aliases        String[] @default([])
+  relatedSystems String[] @default([])
+
+  labTests  LabTest[]  @relation("LabTestBiomarkers")
+  compounds Compound[] @relation("CompoundBiomarkerAssociations")
+  media     Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([searchVector], type: Gin, map: "Biomarker_search_vector_idx")
+}
+
+model CaseStudy {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  title           String
+  description     String?
+  studyType       String?
+  publicationDate DateTime?
+  sourceUrl       String?
+  doi             String?
+  journal         String?
+  outcomeSummary  String?
+  fullTextSummary String?
+
+  tags     String[] @default([])
+  keywords String[] @default([])
+
+  businessSponsors          Organization[] @relation("CaseStudyBusinessSponsors")
+  referencedByOrganizations Organization[] @relation("OrganizationReferencedCaseStudies")
+
+  media Media[]
+
+  embedding    Unsupported("vector")?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([title])
+  @@index([publicationDate])
+  @@index([doi])
+  @@index([searchVector], type: Gin, map: "CaseStudy_search_vector_idx")
+}
+
+model EmbeddingState {
+  id               String          @id @default(cuid())
+  entityType       String
+  entityId         String
+  embeddingVersion Int
+  contentHash      String
+  sourcePayloadJson Json?
+  embeddingText    String?
+  embeddingModel   String?
+  embeddingStatus  EmbeddingStatus
+  embeddedAt       DateTime?
+  lastError        String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([entityType, entityId])
+  @@index([entityType, embeddingStatus])
+  @@index([entityType, embeddingVersion])
+}
+
+model Media {
+  id            String    @id @default(cuid())
+  url           String
+  type          MediaType
+  mimeType      String?
+  title         String?
+  altText       String?
+  caption       String?
+  width         Int?
+  height        Int?
+  durationSeconds Int?
+  fileSizeBytes Int?
+  sortOrder     Int       @default(0)
+
+  podcastId      String?
+  episodeId      String?
+  claimId        String?
+  personId       String?
+  organizationId String?
+  productId      String?
+  compoundId     String?
+  labTestId      String?
+  biomarkerId    String?
+  caseStudyId    String?
+
+  podcast      Podcast?      @relation(fields: [podcastId], references: [id], onDelete: Cascade)
+  episode      Episode?      @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  claim        Claim?        @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  person       Person?       @relation(fields: [personId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product      Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  compound     Compound?     @relation(fields: [compoundId], references: [id], onDelete: Cascade)
+  labTest      LabTest?      @relation(fields: [labTestId], references: [id], onDelete: Cascade)
+  biomarker    Biomarker?    @relation(fields: [biomarkerId], references: [id], onDelete: Cascade)
+  caseStudy    CaseStudy?    @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([podcastId])
+  @@index([episodeId])
+  @@index([claimId])
+  @@index([personId])
+  @@index([organizationId])
+  @@index([productId])
+  @@index([compoundId])
+  @@index([labTestId])
+  @@index([biomarkerId])
+  @@index([caseStudyId])
+  @@index([type])
+}

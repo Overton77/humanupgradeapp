@@ -1,0 +1,18 @@
+query GetPerson($id: ID, $slug: String) {
+  person(id: $id, slug: $slug) {
+    id
+    slug
+    fullName
+    firstName
+    lastName
+    title
+    bio
+    websiteUrl
+    linkedinUrl
+    xUrl
+    aliases
+    expertiseAreas
+    createdAt
+    updatedAt
+  }
+}

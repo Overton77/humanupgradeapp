@@ -1,0 +1,8 @@
+mutation CreateOrganization($data: OrganizationCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createOrganization(data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    organizationType
+  }
+}

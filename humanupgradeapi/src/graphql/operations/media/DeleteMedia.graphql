@@ -1,0 +1,7 @@
+mutation DeleteMedia($where: MediaWhereUniqueInput!) {
+  deleteMedia(where: $where) {
+    id
+    url
+    type
+  }
+}

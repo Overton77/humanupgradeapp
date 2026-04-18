@@ -1,0 +1,46 @@
+# Apollo MCP Server — stdio transport for Cursor.
+# Cursor launches this process; it calls the GraphQL API at the endpoint below.
+# Requires: API running locally (pnpm dev).
+
+transport:
+  type: stdio
+
+endpoint: http://localhost:4000/graphql
+
+schema:
+  source: local
+  path: C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/schema.graphql
+
+custom_scalars: C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/.apollo/custom_scalars.json
+
+operations:
+  source: local
+  paths:
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/podcasts
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/episodes
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/claims
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/persons
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/organizations
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/products
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/compounds
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/labTests
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/biomarkers
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/caseStudies
+    - C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/src/graphql/operations/media
+
+introspection:
+  introspect:
+    enabled: true
+  search:
+    enabled: true
+  validate:
+    enabled: true
+  execute:
+    enabled: true
+
+logging:
+  level: info
+  path: C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/.apollo/mcp-server.log
+
+overrides:
+  mutation_mode: all

@@ -1,0 +1,20 @@
+query GetClaim($id: ID) {
+  claim(id: $id) {
+    id
+    episodeId
+    speakerId
+    text
+    evidenceExcerpt
+    claimType  
+    probableSpeaker
+    stance
+    claimConfidence
+    startTimeSeconds
+    endTimeSeconds
+    sourceUrl
+    tags
+    evidenceUrls
+    createdAt
+    updatedAt
+  }
+}

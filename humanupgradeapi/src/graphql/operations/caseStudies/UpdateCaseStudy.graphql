@@ -1,0 +1,10 @@
+mutation UpdateCaseStudy($where: CaseStudyWhereUniqueInput!, $data: CaseStudyUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateCaseStudy(where: $where, data: $data, embedding: $embedding) {
+    id
+    slug
+    title
+    studyType
+    tags
+    keywords
+  }
+}

@@ -1,0 +1,11 @@
+mutation UpdateBiomarker($where: BiomarkerWhereUniqueInput!, $data: BiomarkerUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateBiomarker(where: $where, data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    unit
+    category
+    aliases
+    relatedSystems
+  }
+}

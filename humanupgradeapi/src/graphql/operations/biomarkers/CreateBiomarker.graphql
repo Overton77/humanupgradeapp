@@ -1,0 +1,9 @@
+mutation CreateBiomarker($data: BiomarkerCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createBiomarker(data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    unit
+    category
+  }
+}

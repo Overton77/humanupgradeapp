@@ -1,0 +1,56 @@
+---
+description: Current multi-entity search service architecture and scoring rules
+globs: humanupgradeapi/src/search/**/*.ts
+alwaysApply: false
+---
+
+# Search Service Architecture
+
+Use the official multi-entity search layer as the source of truth for read-time search behavior.
+
+## Main files
+
+- Core service: `humanupgradeapi/src/search/entitySearchService.ts`
+- Per-entity config: `humanupgradeapi/src/search/entitySearchConfig.ts`
+- Search input/result TS types: `humanupgradeapi/src/search/entitySearchTypes.ts`
+- Searchable entity registry + embedding text source: `humanupgradeapi/src/search/embeddings/embeddingRegistry.ts`
+- GraphQL contract: `humanupgradeapi/src/graphql/schema.graphql`
+- GraphQL plural query delegation: `humanupgradeapi/src/graphql/resolvers/query.ts`
+- Mutation-time embedding sync: `humanupgradeapi/src/services/searchableEntityWriteService.ts`
+
+## GraphQL contract
+
+- Every searchable model has explicit `ModelSearchInput`, `ModelSearchHit`, and `ModelSearchResult` types in `src/graphql/schema.graphql`
+- Plural queries like `organizations`, `products`, and `episodes` now take `input` and return `{ items, total }`
+- Clients only send `query`; GraphQL does not accept raw `embedding` input
+- Singular queries remain direct record fetches and are not part of the search wrapper contract
+
+## Mutation relationship
+
+- The search service is read-only; it does not own create/update/delete behavior
+- Mutation-time embedding refresh stays in `src/services/searchableEntityWriteService.ts` plus `src/search/embeddings/*`
+- Top-level searchable mutations still use `embedding: EmbeddingWriteOptionsInput` with `AUTO`, `SKIP`, or `FORCE`
+
+## Prisma usage
+
+- `query.ts` passes `ctx.prisma` into the search service so reads stay request-scoped
+- `NONE` mode uses Prisma delegate `findMany` + `count` with entity config filters and ordering
+- Scored modes use Prisma raw SQL against `search_vector` and `embedding`, while hydration uses Prisma delegates to fetch records by ordered ids
+- Dynamic table names come only from trusted entity config; user input stays in bound SQL parameters
+
+## Scoring and ranking
+
+- `LEXICAL`: PostgreSQL full-text search with `search_vector @@ websearch_to_tsquery('simple', query)` and `ts_rank_cd(...)`
+- `SEMANTIC`: embed the incoming query with Bedrock using `inputType: 'search_query'`, then score with `1 - (embedding <=> query_vector)`
+- `HYBRID`: take top 50 lexical candidates and top 50 semantic candidates, full-join by id, then compute `0.7 * lexical + 0.3 * semantic`
+- Hybrid `total` is the union count from the top 200 lexical ids and top 200 semantic ids, not a full unbounded corpus count
+
+## Change rules
+
+- Keep GraphQL inputs explicit per model; do not collapse them into a discriminated union
+- Keep scoring logic centralized in `entitySearchService.ts` and entity-specific filtering in `entitySearchConfig.ts`
+- If you change searchable source fields, also check `embeddingRegistry.ts` and mutation-time embedding sync behavior
+
+## Disclaimer
+
+This documents the current API-side search architecture and is expected to evolve when the client app is created and real client search workflows force contract or ranking changes.

@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.turbo/
+
+# Vercel
+.vercel/
+
+# Environment
+.env
+.env.*
+!.env.example
+!.availabe.env
+
+# Prisma
+**/generated/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+.playwright/
+
+# Workflow SDK generated routes
+**/app/.well-known/workflow/
+
+# Cursor / agent transcripts (live outside the repo)
+
+# Legacy git history kept on disk for emergency recovery; real backup is on GitHub at Overton77/humanupgradebiotechapi
+**/.git-legacy-backup/
+
+# Workspace-level research / content folders that sit alongside the monorepo but are not part of it.
+# Remove these entries if you want to bring them into the monorepo.
+/.firecrawl/
+/curated-content/
+/human-upgrade-research/
+/human-upgrade-system/
+

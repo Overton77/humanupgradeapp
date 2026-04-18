@@ -1,0 +1,18 @@
+query GetLabTests($input: LabTestSearchInput) {
+  labTests(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      labTest {
+        id
+        slug
+        name
+        labName
+        testedAt
+        tags
+      }
+    }
+  }
+}

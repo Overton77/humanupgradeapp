@@ -1,0 +1,19 @@
+query GetBiomarker($id: ID, $slug: String) {
+  biomarker(id: $id, slug: $slug) {
+    id
+    slug
+    name
+    description
+    unit
+    category
+    referenceRange
+    referenceAgeMin
+    referenceAgeMax
+    referenceRangeLow
+    referenceRangeMax
+    aliases
+    relatedSystems
+    createdAt
+    updatedAt
+  }
+}

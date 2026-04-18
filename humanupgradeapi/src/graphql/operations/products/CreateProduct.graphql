@@ -1,0 +1,9 @@
+mutation CreateProduct($data: ProductCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createProduct(data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    category
+    isActive
+  }
+}

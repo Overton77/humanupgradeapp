@@ -1,0 +1,9 @@
+mutation UpdateLabTest($where: LabTestWhereUniqueInput!, $data: LabTestUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateLabTest(where: $where, data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    labName
+    tags
+  }
+}

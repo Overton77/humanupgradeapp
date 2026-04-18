@@ -1,0 +1,17 @@
+query GetLabTest($id: ID, $slug: String) {
+  labTest(id: $id, slug: $slug) {
+    id
+    slug
+    productId
+    organizationId
+    name
+    description
+    labName
+    reportUrl
+    testedAt
+    sampleType
+    tags
+    createdAt
+    updatedAt
+  }
+}

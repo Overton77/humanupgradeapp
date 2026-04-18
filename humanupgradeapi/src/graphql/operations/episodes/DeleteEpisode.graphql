@@ -1,0 +1,7 @@
+mutation DeleteEpisode($where: EpisodeWhereUniqueInput!) {
+  deleteEpisode(where: $where) {
+    id
+    slug
+    title
+  }
+}

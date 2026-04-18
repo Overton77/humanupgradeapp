@@ -1,0 +1,19 @@
+query GetCaseStudies($input: CaseStudySearchInput) {
+  caseStudies(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      caseStudy {
+        id
+        slug
+        title
+        studyType
+        doi
+        tags
+        keywords
+      }
+    }
+  }
+}

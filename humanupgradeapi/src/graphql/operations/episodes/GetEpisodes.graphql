@@ -1,0 +1,23 @@
+query GetEpisodes($input: EpisodeSearchInput) {
+  episodes(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      episode {
+        id
+        slug
+        podcastId
+        title
+        episodeNumber
+        channelName
+        publishedAt
+        isPublished
+        publishStatus
+        topicPrimary
+        tags
+      }
+    }
+  }
+}

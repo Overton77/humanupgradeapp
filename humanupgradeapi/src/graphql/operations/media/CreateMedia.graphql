@@ -1,0 +1,9 @@
+mutation CreateMedia($data: MediaCreateInput!) {
+  createMedia(data: $data) {
+    id
+    url
+    type
+    title
+    sortOrder
+  }
+}

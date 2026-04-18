@@ -1,0 +1,10 @@
+mutation CreatePerson($data: PersonCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createPerson(data: $data, embedding: $embedding) {
+    id
+    slug
+    fullName
+    firstName
+    lastName
+    title
+  }
+}

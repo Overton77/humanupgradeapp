@@ -1,0 +1,63 @@
+---
+description: API architecture, schema structure, and data flow conventions
+globs: humanupgradeapi/**/*.ts, humanupgradeapi/**/schema.prisma, humanupgradeapi/**/*.graphql
+alwaysApply: false
+---
+
+# API Architecture
+
+Stack: Express 5 + Apollo Server v5 + Prisma 7 (PrismaPg) + Zod 4 + Postgres
+
+## Key files
+
+- `prisma/schema.prisma` -- single source of truth for data models
+- `src/graphql/schema.graphql` -- canonical GraphQL SDL used by both the API and Apollo MCP
+- `src/schema/resolvers/` -- query.ts, mutation.ts, per-entity field resolvers
+- `src/validation/` -- hand-maintained Zod mirrors for GraphQL inputs and resolver-facing types
+- `src/loaders/` -- request-scoped DataLoaders (factory in index.ts)
+- `src/lib/prisma.ts` -- PrismaClient singleton with PrismaPg adapter
+- `src/lib/context.ts` -- Apollo context factory (prisma + loaders)
+- `src/server.ts` -- Express entrypoint; reads `src/graphql/schema.graphql` at startup and `export default app` for Vercel
+
+## Data flow
+
+```
+GraphQL request
+  -> Apollo Server
+  -> Resolver (query.ts or mutation.ts)
+  -> helper mapping in resolvers/helpers.ts
+  -> Prisma query (via context.prisma)
+  -> Field resolvers use DataLoaders (via context.loaders)
+  -> Response
+```
+
+Note: `src/validation/` is currently a synchronized contract mirror, not an automatically wired runtime validation step.
+
+## Schema change checklist
+
+When adding/changing a model or field:
+
+1. Edit `prisma/schema.prisma`
+2. Run `pnpm prisma generate` then `pnpm prisma db push` when the schema change needs DB sync
+3. Update `src/graphql/schema.graphql` (types, inputs, queries, mutations)
+4. Add/update Zod schema in `src/validation/<entity>.ts`
+5. Add/update resolver logic in `src/schema/resolvers/`
+6. Add/update DataLoaders if new relations added
+7. Add/update `.graphql` operation files in `src/graphql/operations/`
+8. Restart the local API and Apollo MCP server if schema introspection or tool signatures look stale
+
+## Mutation conventions
+
+- Create: `createX(data: XCreateInput!): X!`
+- Update/Delete use model-specific `*WhereUniqueInput` types, including `ClaimWhereUniqueInput` and `MediaWhereUniqueInput`
+- Nullable fields use `StringNullableOperationInput { set, clear }`
+- String arrays use `StringListOperationInput { set, add, remove }`
+- Relations use typed relation inputs such as `PersonToManyRelationUpdateInput` and `OrganizationToOneRelationUpdateInput`
+- To-many relation updates may expose `set`, `connect`, `disconnect`, `create`, and `connectOrCreate`
+- `connectOrCreate` uses model-specific `*ConnectOrCreateWhereInput`; use real unique selectors that nested `create` can satisfy
+
+## Future directions
+
+- **Advanced search**: Full-text search across episodes, claims, persons. Will add `search` query with filters, pagination cursors, and relevance scoring.
+- **User API**: Authentication model (User, Session), API key management, role-based access control. Will add auth middleware to Express before Apollo.
+- Keep these in mind when structuring new code -- avoid patterns that would conflict with adding auth headers or search indexes later.

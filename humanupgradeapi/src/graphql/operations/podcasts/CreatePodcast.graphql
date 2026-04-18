@@ -1,0 +1,9 @@
+mutation CreatePodcast($data: PodcastCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createPodcast(data: $data, embedding: $embedding) {
+    id
+    slug
+    title
+    subtitle
+    isPublished
+  }
+}

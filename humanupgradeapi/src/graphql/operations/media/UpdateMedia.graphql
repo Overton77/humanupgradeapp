@@ -1,0 +1,9 @@
+mutation UpdateMedia($where: MediaWhereUniqueInput!, $data: MediaUpdateInput!) {
+  updateMedia(where: $where, data: $data) {
+    id
+    url
+    type
+    title
+    sortOrder
+  }
+}

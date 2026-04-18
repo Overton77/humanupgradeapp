@@ -1,0 +1,11 @@
+mutation UpdateOrganization($where: OrganizationWhereUniqueInput!, $data: OrganizationUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateOrganization(where: $where, data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    organizationType
+    tags
+    aliases
+    domains
+  }
+}

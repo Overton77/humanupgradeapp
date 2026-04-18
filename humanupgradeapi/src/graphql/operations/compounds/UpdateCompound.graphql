@@ -1,0 +1,10 @@
+mutation UpdateCompound($where: CompoundWhereUniqueInput!, $data: CompoundUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateCompound(where: $where, data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    canonicalName
+    aliases
+    mechanisms
+  }
+}

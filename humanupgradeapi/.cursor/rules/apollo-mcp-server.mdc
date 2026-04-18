@@ -1,0 +1,54 @@
+---
+description: Apollo MCP Server setup and operation file conventions
+globs: humanupgradeapi/.apollo/*, humanupgradeapi/src/graphql/operations/**/*.graphql
+alwaysApply: false
+---
+
+# Apollo MCP Server
+
+The API exposes GraphQL operations as MCP tools via `apollo-mcp-server` (v1.1.1).
+
+## Config
+
+- `.apollo/mcp.stdio.yaml` -- stdio transport config for Cursor
+- `src/graphql/schema.graphql` -- canonical local schema file used by both the app and Apollo MCP
+- `.apollo/custom_scalars.json` -- type hints for DateTime, Decimal, JSON
+- Workspace `.cursor/mcp.json` points to this config
+
+## How to run
+
+1. Start the API: `cd humanupgradeapi && pnpm dev`
+2. Cursor auto-launches `apollo-mcp-server` via mcp.json (stdio transport)
+3. The MCP server reads `src/graphql/schema.graphql` locally and executes against `http://localhost:4000/graphql`
+
+If the MCP server shows stale introspection, outdated tool signatures, or schema mismatch errors, restart it from Cursor's MCP panel after the API is running.
+
+## Operation files
+
+Each `.graphql` file in `src/graphql/operations/<entity>/` becomes one MCP tool. Rules:
+
+- One named operation per file (the operation name becomes the tool name)
+- Queries: `GetX`, `GetXs` (list)
+- Mutations: `CreateX`, `UpdateX`, `DeleteX`
+- Return only the fields the agent typically needs, not every field
+- Keep operation variable types aligned with the schema, e.g. `OrganizationWhereUniqueInput` instead of the old generic `WhereUniqueInput`
+
+## Adding new operations
+
+1. Create `src/graphql/operations/<entity>/<OperationName>.graphql`
+2. Add the directory to `.apollo/mcp.stdio.yaml` paths (if new entity)
+3. Validate the operation against the current schema
+4. Restart the MCP server in Cursor if the new tool or argument types do not appear immediately
+
+## Built-in tools (always available)
+
+- `introspect` -- explore schema types
+- `search` -- find types by name
+- `validate` -- check operation validity
+- `execute` -- run ad-hoc GraphQL (for one-off queries not worth a file)
+
+## Practical workflow
+
+- Use `introspect` first when you need to confirm current mutation signatures or nested input availability
+- Use `validate` before `execute` for ad-hoc operations against recently changed schema areas
+- Prefer checked-in operation files for repeated workflows; use `execute` for one-off testing such as nested relation mutations

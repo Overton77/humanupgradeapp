@@ -1,0 +1,18 @@
+query GetBiomarkers($input: BiomarkerSearchInput) {
+  biomarkers(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      biomarker {
+        id
+        slug
+        name
+        unit
+        category
+        aliases
+      }
+    }
+  }
+}

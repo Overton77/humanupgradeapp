@@ -1,0 +1,7 @@
+mutation DeletePerson($where: PersonWhereUniqueInput!) {
+  deletePerson(where: $where) {
+    id
+    slug
+    fullName
+  }
+}

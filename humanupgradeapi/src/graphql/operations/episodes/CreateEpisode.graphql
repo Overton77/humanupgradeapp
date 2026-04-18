@@ -1,0 +1,11 @@
+mutation CreateEpisode($data: EpisodeCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createEpisode(data: $data, embedding: $embedding) {
+    id
+    slug
+    title
+    episodeNumber
+    channelName
+    publishedAt
+    isPublished
+  }
+}

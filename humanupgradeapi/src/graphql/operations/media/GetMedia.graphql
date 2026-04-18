@@ -1,0 +1,28 @@
+query GetMedia($id: ID) {
+  media(id: $id) {
+    id
+    url
+    type
+    mimeType
+    title
+    altText
+    caption
+    width
+    height
+    durationSeconds
+    fileSizeBytes
+    sortOrder
+    podcastId
+    episodeId
+    claimId
+    personId
+    organizationId
+    productId
+    compoundId
+    labTestId
+    biomarkerId
+    caseStudyId
+    createdAt
+    updatedAt
+  }
+}

@@ -1,0 +1,18 @@
+query GetProducts($input: ProductSearchInput) {
+  products(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      product {
+        id
+        slug
+        name
+        category
+        isActive
+        tags
+      }
+    }
+  }
+}

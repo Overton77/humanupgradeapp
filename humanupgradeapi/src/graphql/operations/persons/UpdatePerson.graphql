@@ -1,0 +1,12 @@
+mutation UpdatePerson($where: PersonWhereUniqueInput!, $data: PersonUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updatePerson(where: $where, data: $data, embedding: $embedding) {
+    id
+    slug
+    fullName
+    firstName
+    lastName
+    title
+    aliases
+    expertiseAreas
+  }
+}

@@ -1,0 +1,21 @@
+query GetClaims($input: ClaimSearchInput) {
+  claims(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      claim {
+        id
+        episodeId
+        speakerId
+        probableSpeaker
+        text
+        claimType
+        stance
+        claimConfidence
+        tags
+      }
+    }
+  }
+}

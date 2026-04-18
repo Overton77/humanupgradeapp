@@ -1,0 +1,14 @@
+{
+  "DateTime": {
+    "type": "string",
+    "description": "ISO 8601 date-time string (e.g. 2024-01-15T10:30:00Z)"
+  },
+  "Decimal": {
+    "type": "number",
+    "description": "Decimal number for precise monetary/scientific values"
+  },
+  "JSON": {
+    "type": "object",
+    "description": "Arbitrary JSON value (objects, arrays, scalars)"
+  }
+}

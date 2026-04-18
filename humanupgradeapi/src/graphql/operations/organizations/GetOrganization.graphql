@@ -1,0 +1,21 @@
+query GetOrganization($id: ID, $slug: String) {
+  organization(id: $id, slug: $slug) {
+    id
+    slug
+    name
+    legalName
+    description
+    websiteUrl
+    headquarters
+    foundedYear
+    annualRevenue
+    stockTicker
+    employeeCount
+    organizationType
+    tags
+    aliases
+    domains
+    createdAt
+    updatedAt
+  }
+}

@@ -1,0 +1,38 @@
+query GetEpisode($id: ID, $slug: String, $episodePageUrl: String) {
+  episode(id: $id, slug: $slug, episodePageUrl: $episodePageUrl) {
+    id
+    slug
+    podcastId
+    title
+    episodeNumber
+    seasonNumber
+    channelName
+    summary
+    description
+    audioUrl
+    videoUrl
+    publishedAt
+    durationSeconds
+    isPublished
+    webPageSummary
+    summaryShort
+    summaryDetailed
+    publishedSummary
+    episodePageUrl
+    episodeTranscriptUrl
+    youtubeVideoId
+    youtubeWatchUrl
+    topicPrimary
+    topicSecondary
+    topicConcepts
+    transcriptStatus
+    enrichmentStage1Status
+    enrichmentStage2Status
+    publishStatus
+    tags
+    keyTakeaways
+    topics
+    createdAt
+    updatedAt
+  }
+}

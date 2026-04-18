@@ -1,0 +1,45 @@
+---
+description: Embedding mutation-level service rules for embedding modules
+globs: humanupgradeapi/src/search/embeddings/**/*.ts
+alwaysApply: false
+---
+
+# Embedding Mutation Service
+
+Use the embedding modules as the source of truth for mutation-time embedding behavior.
+
+## Contract
+
+- Top-level searchable mutations accept `embedding: EmbeddingWriteOptionsInput` with `AUTO`, `SKIP`, or `FORCE`
+- The mutation layer is only an invocation path; registry, hashing, provider calls, and state writes belong in the embedding service modules
+- Nested `create` and `connectOrCreate.create` should inherit the parent embedding mode; plain `connect` must not trigger child creation-time embedding sync
+
+## Persistence split
+
+- Store vectors on each model's existing `embedding Unsupported("vector")?` column
+- Store version/hash/status/debug payloads in `EmbeddingState`
+- Use raw SQL only for pgvector reads/writes on the unsupported `embedding` columns
+- Use normal Prisma ORM writes for supported model fields and for `EmbeddingState`
+
+## Required flow
+
+1. Fetch the row using the registry `select`
+2. Build normalized source with `buildSource`
+3. Validate via the registry `sourceSchema`
+4. Render deterministic text with `buildText`
+5. Hash `entity + version + text`
+6. Compare against `EmbeddingState`
+7. If needed, call Bedrock and then update the model vector column via raw SQL
+8. Persist the resulting `EmbeddingState`
+
+## Mode semantics
+
+- `AUTO`: generate only when missing, stale, version-changed, or hash-changed
+- `SKIP`: persist the latest snapshot metadata without calling the provider
+- `FORCE`: always call the provider and refresh both vector + sidecar state
+
+## Dependency rules
+
+- Keep parent re-sync behavior explicit in service orchestration
+- Initial dependency graph: `compound -> product`, `labTest -> product`, `biomarker -> labTest`, `organization -> caseStudy`
+- When changing source fields or relation membership, make sure the affected parent embeddings are re-evaluated after the write commits

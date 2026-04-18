@@ -1,0 +1,8 @@
+mutation CreateCompound($data: CompoundCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createCompound(data: $data, embedding: $embedding) {
+    id
+    slug
+    name
+    canonicalName
+  }
+}

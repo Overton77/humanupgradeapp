@@ -1,0 +1,17 @@
+query GetPersons($input: PersonSearchInput) {
+  persons(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      person {
+        id
+        slug
+        fullName
+        title
+        expertiseAreas
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+packages:
+  - 'humanupgradeapi'
+  - 'humanupgrade-client'
+  - 'packages/*'
+
+# Build allowlist for native deps Prisma needs.
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - '@prisma/client'
+  - '@sentry/cli'
+  - 'esbuild'
+  - 'sharp'

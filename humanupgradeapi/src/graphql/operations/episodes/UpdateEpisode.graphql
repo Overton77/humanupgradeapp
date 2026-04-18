@@ -1,0 +1,12 @@
+mutation UpdateEpisode($where: EpisodeWhereUniqueInput!, $data: EpisodeUpdateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  updateEpisode(where: $where, data: $data, embedding: $embedding) {
+    id
+    slug
+    title
+    episodeNumber
+    isPublished
+    publishStatus
+    tags
+    keyTakeaways
+  }
+}

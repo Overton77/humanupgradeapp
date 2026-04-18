@@ -1,0 +1,9 @@
+mutation CreateCaseStudy($data: CaseStudyCreateInput!, $embedding: EmbeddingWriteOptionsInput) {
+  createCaseStudy(data: $data, embedding: $embedding) {
+    id
+    slug
+    title
+    studyType
+    doi
+  }
+}

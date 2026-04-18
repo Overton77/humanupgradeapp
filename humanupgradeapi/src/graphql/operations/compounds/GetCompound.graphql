@@ -1,0 +1,14 @@
+query GetCompound($id: ID, $slug: String) {
+  compound(id: $id, slug: $slug) {
+    id
+    slug
+    name
+    description
+    canonicalName
+    externalRef
+    aliases
+    mechanisms
+    createdAt
+    updatedAt
+  }
+}

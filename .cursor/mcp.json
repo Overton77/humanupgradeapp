@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "humanupgrade-graphql": {
+      "command": "apollo-mcp-server",
+      "args": ["C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi/.apollo/mcp.stdio.yaml"],
+      "cwd": "C:/Users/Pinda/Proyectos/humanupgradeapp/humanupgradeapi",
+      "env": {
+        "NO_COLOR": "1"
+      }
+    }
+  }
+}

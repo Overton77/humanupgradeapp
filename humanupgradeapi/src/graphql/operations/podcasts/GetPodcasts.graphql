@@ -1,0 +1,11 @@
+query GetPodcasts {
+  podcasts {
+    id
+    slug
+    title
+    subtitle
+    hostName
+    isPublished
+    tags
+  }
+}

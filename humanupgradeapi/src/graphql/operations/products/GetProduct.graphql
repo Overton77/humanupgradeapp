@@ -1,0 +1,22 @@
+query GetProduct($id: ID, $slug: String) {
+  product(id: $id, slug: $slug) {
+    id
+    slug
+    organizationId
+    name
+    recommendedUse
+    description
+    category
+    sku
+    productUrl
+    price
+    currency
+    isActive
+    isLabTestPanelDefinition
+    tags
+    categories
+    benefits
+    createdAt
+    updatedAt
+  }
+}

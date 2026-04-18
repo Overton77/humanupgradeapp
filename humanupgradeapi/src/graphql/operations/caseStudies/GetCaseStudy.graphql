@@ -1,0 +1,19 @@
+query GetCaseStudy($id: ID, $slug: String) {
+  caseStudy(id: $id, slug: $slug) {
+    id
+    slug
+    title
+    description
+    studyType
+    publicationDate
+    sourceUrl
+    doi
+    journal
+    outcomeSummary
+    fullTextSummary
+    tags
+    keywords
+    createdAt
+    updatedAt
+  }
+}

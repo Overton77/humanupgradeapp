@@ -1,0 +1,17 @@
+query GetCompounds($input: CompoundSearchInput) {
+  compounds(input: $input) {
+    total
+    items {
+      lexicalScore
+      semanticScore
+      hybridScore
+      compound {
+        id
+        slug
+        name
+        canonicalName
+        aliases
+      }
+    }
+  }
+}

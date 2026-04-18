@@ -1,0 +1,1361 @@
+scalar DateTime
+scalar Decimal
+scalar JSON
+
+# ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+  LINK
+  OTHER
+}
+
+enum ClaimType {
+  FACTUAL
+  CAUSAL
+  MECHANISTIC
+  MECHANISM_BIOLOGICAL
+  STATISTICAL
+  ANECDOTAL
+  RECOMMENDATION
+  CLINICAL_APPLICATION
+  SAFETY_RISK
+  INTERVENTION_PROTOCOL
+  INTERVENTION_TECHNOLOGY
+  PRODUCT_CLAIM
+  OTHER
+}
+
+enum ClaimStance {
+  SUPPORTS
+  OPPOSES
+  ASSERTED
+  NEUTRAL
+  MIXED
+  SUGGESTED
+  ANECDOTAL
+  UNKNOWN
+}
+
+enum ClaimConfidence {
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+  UNKNOWN
+}
+
+enum OrganizationType {
+  BRAND
+  MANUFACTURER
+  RETAILER
+  LAB
+  CLINIC
+  RESEARCH_INSTITUTION
+  NONPROFIT
+  MEDIA
+  SPONSOR
+  HOLDING_COMPANY
+  OTHER
+}
+
+enum TranscriptStatus {
+  MISSING
+  QUEUED
+  STORED
+  ERROR
+}
+
+enum PipelineStatus {
+  NOT_STARTED
+  RUNNING
+  COMPLETE
+  ERROR
+}
+
+enum PublishStatus {
+  HIDDEN
+  READY
+}
+
+enum EmbeddingWriteMode {
+  AUTO
+  SKIP
+  FORCE
+}
+
+# ─── Object Types ──────────────────────────────────────────────────────────
+
+type Podcast {
+  id: ID!
+  slug: String!
+  title: String!
+  subtitle: String
+  description: String
+  rssUrl: String
+  websiteUrl: String
+  hostName: String
+  language: String
+  isPublished: Boolean!
+  tags: [String!]!
+  episodes: [Episode!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Episode {
+  id: ID!
+  slug: String!
+  podcastId: String!
+  podcast: Podcast!
+  title: String!
+  episodeNumber: Int
+  seasonNumber: Int
+  channelName: String
+  summary: String
+  description: String
+  transcript: String
+  transcriptSourceUrl: String
+  audioUrl: String
+  videoUrl: String
+  publishedAt: DateTime
+  durationSeconds: Int
+  isPublished: Boolean!
+
+  webPageSummary: String
+  summaryShort: String
+  summaryDetailed: String
+  publishedSummary: String
+
+  episodePageUrl: String
+  episodeTranscriptUrl: String
+
+  youtubeVideoId: String
+  youtubeEmbedUrl: String
+  youtubeWatchUrl: String
+
+  s3TranscriptKey: String
+  s3TranscriptUrl: String
+  transcriptStatus: TranscriptStatus!
+  transcriptSha256: String
+  transcriptLastAttemptAt: DateTime
+  transcriptErrorMessage: String
+  transcriptErrorAt: DateTime
+  transcriptStorageProvider: String
+  transcriptStorageBucket: String
+  transcriptStorageKey: String
+
+  topicPrimary: String
+  topicSecondary: [String!]!
+  topicConcepts: [String!]!
+
+  enrichmentStage1Status: PipelineStatus!
+  enrichmentStage1CompletedAt: DateTime
+  enrichmentStage1RunId: String
+  enrichmentStage2Status: PipelineStatus!
+  enrichmentStage2CompletedAt: DateTime
+  enrichmentStage2RunId: String
+
+  publishStatus: PublishStatus!
+  webPageTimelines: JSON
+
+  tags: [String!]!
+  keyTakeaways: [String!]!
+  topics: [String!]!
+
+  sponsorOrganizations: [Organization!]!
+  guests: [Person!]!
+  claims: [Claim!]!
+  media: [Media!]!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Claim {
+  id: ID!
+  episodeId: String!
+  episode: Episode!
+  speakerId: String
+  speaker: Person
+  text: String!
+  probableSpeaker: String
+  evidenceExcerpt: String
+  claimType: ClaimType!
+  stance: ClaimStance!
+  claimConfidence: ClaimConfidence!
+  startTimeSeconds: Int
+  endTimeSeconds: Int
+  sourceUrl: String
+  tags: [String!]!
+  evidenceUrls: [String!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Person {
+  id: ID!
+  slug: String!
+  fullName: String!
+  firstName: String
+  lastName: String
+  title: String
+  bio: String
+  websiteUrl: String
+  linkedinUrl: String
+  xUrl: String
+  aliases: [String!]!
+  expertiseAreas: [String!]!
+  guestEpisodes: [Episode!]!
+  spokenClaims: [Claim!]!
+  ownedOrganizations: [Organization!]!
+  executiveOrganizations: [Organization!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Organization {
+  id: ID!
+  slug: String!
+  name: String!
+  legalName: String
+  description: String
+  websiteUrl: String
+  headquarters: String
+  foundedYear: Int
+  annualRevenue: Float
+  stockTicker: String
+  employeeCount: Int
+  organizationType: OrganizationType!
+  tags: [String!]!
+  aliases: [String!]!
+  domains: [String!]!
+  products: [Product!]!
+  owners: [Person!]!
+  executives: [Person!]!
+  labTests: [LabTest!]!
+  sponsoredEpisodes: [Episode!]!
+  referencedCaseStudies: [CaseStudy!]!
+  businessSponsoredCases: [CaseStudy!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Product {
+  id: ID!
+  slug: String!
+  organizationId: String
+  organization: Organization
+  isLabTestPanelDefinition: Boolean
+  name: String!
+  recommendedUse: String
+  description: String
+  category: String
+  sku: String
+  productUrl: String
+  price: Decimal
+  currency: String
+  isActive: Boolean!
+  tags: [String!]!
+  categories: [String!]!
+  benefits: [String!]!
+  containsCompounds: [Compound!]!
+  labTests: [LabTest!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Compound {
+  id: ID!
+  slug: String!
+  name: String!
+  description: String
+  canonicalName: String
+  externalRef: String
+  aliases: [String!]!
+  mechanisms: [String!]!
+  products: [Product!]!
+  biomarkers: [Biomarker!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LabTest {
+  id: ID!
+  slug: String!
+  productId: String
+  product: Product
+  organizationId: String
+  organization: Organization
+  name: String!
+  description: String
+  labName: String
+  reportUrl: String
+  testedAt: DateTime
+  sampleType: String
+  tags: [String!]!
+  testsBiomarkers: [Biomarker!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Biomarker {
+  id: ID!
+  slug: String!
+  name: String!
+  description: String
+  unit: String
+  category: String
+  referenceRange: String
+  referenceAgeMin: Int
+  referenceAgeMax: Int
+  referenceRangeLow: Float
+  referenceRangeMax: Float
+  aliases: [String!]!
+  relatedSystems: [String!]!
+  labTests: [LabTest!]!
+  compounds: [Compound!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CaseStudy {
+  id: ID!
+  slug: String!
+  title: String!
+  description: String
+  studyType: String
+  publicationDate: DateTime
+  sourceUrl: String
+  doi: String
+  journal: String
+  outcomeSummary: String
+  fullTextSummary: String
+  tags: [String!]!
+  keywords: [String!]!
+  businessSponsors: [Organization!]!
+  referencedByOrganizations: [Organization!]!
+  media: [Media!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Media {
+  id: ID!
+  url: String!
+  type: MediaType!
+  mimeType: String
+  title: String
+  altText: String
+  caption: String
+  width: Int
+  height: Int
+  durationSeconds: Int
+  fileSizeBytes: Int
+  sortOrder: Int!
+  podcastId: String
+  episodeId: String
+  claimId: String
+  personId: String
+  organizationId: String
+  productId: String
+  compoundId: String
+  labTestId: String
+  biomarkerId: String
+  caseStudyId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ─── Shared Input Types ────────────────────────────────────────────────────
+
+input PodcastWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input EpisodeWhereUniqueInput {
+  id: ID
+  slug: String
+  episodePageUrl: String
+}
+
+input ClaimWhereUniqueInput {
+  id: ID!
+}
+
+input PersonWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input OrganizationWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input ProductWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input CompoundWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input LabTestWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input BiomarkerWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input CaseStudyWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input MediaWhereUniqueInput {
+  id: ID!
+}
+
+input MediaConnectOrCreateWhereInput {
+  id: ID!
+}
+
+input PersonConnectOrCreateWhereInput {
+  slug: String!
+}
+
+input OrganizationConnectOrCreateWhereInput {
+  slug: String!
+}
+
+input ProductConnectOrCreateWhereInput {
+  slug: String!
+}
+
+input CompoundConnectOrCreateWhereInput {
+  slug: String!
+}
+
+input BiomarkerConnectOrCreateWhereInput {
+  slug: String!
+}
+
+input StringNullableOperationInput {
+  set: String
+  clear: Boolean
+}
+
+input IntNullableOperationInput {
+  set: Int
+  clear: Boolean
+}
+
+input FloatNullableOperationInput {
+  set: Float
+  clear: Boolean
+}
+
+input DateTimeNullableOperationInput {
+  set: DateTime
+  clear: Boolean
+}
+
+input DecimalNullableOperationInput {
+  set: Decimal
+  clear: Boolean
+}
+
+input StringListOperationInput {
+  set: [String!]
+  add: [String!]
+  remove: [String!]
+}
+
+input PersonConnectOrCreateInput {
+  where: PersonConnectOrCreateWhereInput!
+  create: PersonCreateInput!
+}
+
+input OrganizationConnectOrCreateInput {
+  where: OrganizationConnectOrCreateWhereInput!
+  create: OrganizationCreateInput!
+}
+
+input ProductConnectOrCreateInput {
+  where: ProductConnectOrCreateWhereInput!
+  create: ProductCreateInput!
+}
+
+input CompoundConnectOrCreateInput {
+  where: CompoundConnectOrCreateWhereInput!
+  create: CompoundCreateInput!
+}
+
+input BiomarkerConnectOrCreateInput {
+  where: BiomarkerConnectOrCreateWhereInput!
+  create: BiomarkerCreateInput!
+}
+
+input MediaConnectOrCreateInput {
+  where: MediaConnectOrCreateWhereInput!
+  create: MediaCreateInput!
+}
+
+input EmbeddingWriteOptionsInput {
+  mode: EmbeddingWriteMode = AUTO
+}
+
+input PersonToOneRelationUpdateInput {
+  connect: PersonWhereUniqueInput
+  disconnect: Boolean
+  create: PersonCreateInput
+  connectOrCreate: PersonConnectOrCreateInput
+}
+
+input PersonToManyRelationUpdateInput {
+  set: [PersonWhereUniqueInput!]
+  connect: [PersonWhereUniqueInput!]
+  disconnect: [PersonWhereUniqueInput!]
+  create: [PersonCreateInput!]
+  connectOrCreate: [PersonConnectOrCreateInput!]
+}
+
+input OrganizationToOneRelationUpdateInput {
+  connect: OrganizationWhereUniqueInput
+  disconnect: Boolean
+  create: OrganizationCreateInput
+  connectOrCreate: OrganizationConnectOrCreateInput
+}
+
+input OrganizationToManyRelationUpdateInput {
+  set: [OrganizationWhereUniqueInput!]
+  connect: [OrganizationWhereUniqueInput!]
+  disconnect: [OrganizationWhereUniqueInput!]
+  create: [OrganizationCreateInput!]
+  connectOrCreate: [OrganizationConnectOrCreateInput!]
+}
+
+input ProductToOneRelationUpdateInput {
+  connect: ProductWhereUniqueInput
+  disconnect: Boolean
+  create: ProductCreateInput
+  connectOrCreate: ProductConnectOrCreateInput
+}
+
+input CompoundToManyRelationUpdateInput {
+  set: [CompoundWhereUniqueInput!]
+  connect: [CompoundWhereUniqueInput!]
+  disconnect: [CompoundWhereUniqueInput!]
+  create: [CompoundCreateInput!]
+  connectOrCreate: [CompoundConnectOrCreateInput!]
+}
+
+input BiomarkerToManyRelationUpdateInput {
+  set: [BiomarkerWhereUniqueInput!]
+  connect: [BiomarkerWhereUniqueInput!]
+  disconnect: [BiomarkerWhereUniqueInput!]
+  create: [BiomarkerCreateInput!]
+  connectOrCreate: [BiomarkerConnectOrCreateInput!]
+}
+
+input MediaToManyRelationUpdateInput {
+  set: [MediaWhereUniqueInput!]
+  connect: [MediaWhereUniqueInput!]
+  disconnect: [MediaWhereUniqueInput!]
+  create: [MediaCreateInput!]
+  connectOrCreate: [MediaConnectOrCreateInput!]
+}
+
+# ─── Create Inputs ─────────────────────────────────────────────────────────
+
+input PodcastCreateInput {
+  slug: String!
+  title: String!
+  subtitle: String
+  description: String
+  rssUrl: String
+  websiteUrl: String
+  hostName: String
+  language: String
+  isPublished: Boolean
+  tags: [String!]
+}
+
+input EpisodeCreateInput {
+  slug: String!
+  podcastId: String!
+  title: String!
+  episodeNumber: Int
+  seasonNumber: Int
+  channelName: String
+  summary: String
+  description: String
+  transcript: String
+  transcriptSourceUrl: String
+  audioUrl: String
+  videoUrl: String
+  publishedAt: DateTime
+  durationSeconds: Int
+  isPublished: Boolean
+  webPageSummary: String
+  summaryShort: String
+  summaryDetailed: String
+  publishedSummary: String
+  episodePageUrl: String
+  episodeTranscriptUrl: String
+  youtubeVideoId: String
+  youtubeEmbedUrl: String
+  youtubeWatchUrl: String
+  s3TranscriptKey: String
+  s3TranscriptUrl: String
+  transcriptStatus: TranscriptStatus
+  transcriptSha256: String
+  topicPrimary: String
+  topicSecondary: [String!]
+  topicConcepts: [String!]
+  enrichmentStage1Status: PipelineStatus
+  enrichmentStage2Status: PipelineStatus
+  publishStatus: PublishStatus
+  tags: [String!]
+  keyTakeaways: [String!]
+  topics: [String!]
+  webPageTimelines: JSON
+}
+
+input ClaimCreateInput {
+  episodeId: String!
+  speakerId: String
+  text: String!
+  evidenceExcerpt: String
+  claimType: ClaimType
+  stance: ClaimStance
+  claimConfidence: ClaimConfidence
+  startTimeSeconds: Int
+  endTimeSeconds: Int
+  sourceUrl: String
+  tags: [String!]
+  evidenceUrls: [String!]
+}
+
+input PersonCreateInput {
+  slug: String!
+  fullName: String!
+  firstName: String
+  lastName: String
+  title: String
+  bio: String
+  websiteUrl: String
+  linkedinUrl: String
+  xUrl: String
+  aliases: [String!]
+  expertiseAreas: [String!]
+}
+
+input OrganizationCreateInput {
+  slug: String!
+  name: String!
+  legalName: String
+  description: String
+  websiteUrl: String
+  headquarters: String
+  foundedYear: Int
+  annualRevenue: Float
+  stockTicker: String
+  employeeCount: Int
+  organizationType: OrganizationType
+  tags: [String!]
+  aliases: [String!]
+  domains: [String!]
+}
+
+input ProductCreateInput {
+  slug: String!
+  organizationId: String
+  isLabTestPanelDefinition: Boolean
+  name: String!
+  recommendedUse: String
+  description: String
+  category: String
+  sku: String
+  productUrl: String
+  price: Decimal
+  currency: String
+  isActive: Boolean
+  tags: [String!]
+  categories: [String!]
+  benefits: [String!]
+}
+
+input CompoundCreateInput {
+  slug: String!
+  name: String!
+  description: String
+  canonicalName: String
+  externalRef: String
+  aliases: [String!]
+  mechanisms: [String!]
+}
+
+input LabTestCreateInput {
+  slug: String!
+  productId: String
+  organizationId: String
+  name: String!
+  description: String
+  labName: String
+  reportUrl: String
+  testedAt: DateTime
+  sampleType: String
+  tags: [String!]
+}
+
+input BiomarkerCreateInput {
+  slug: String!
+  name: String!
+  description: String
+  unit: String
+  category: String
+  referenceRange: String
+  referenceAgeMin: Int
+  referenceAgeMax: Int
+  referenceRangeLow: Float
+  referenceRangeMax: Float
+  aliases: [String!]
+  relatedSystems: [String!]
+}
+
+input CaseStudyCreateInput {
+  slug: String!
+  title: String!
+  description: String
+  studyType: String
+  publicationDate: DateTime
+  sourceUrl: String
+  doi: String
+  journal: String
+  outcomeSummary: String
+  fullTextSummary: String
+  tags: [String!]
+  keywords: [String!]
+}
+
+input MediaCreateInput {
+  url: String!
+  type: MediaType!
+  mimeType: String
+  title: String
+  altText: String
+  caption: String
+  width: Int
+  height: Int
+  durationSeconds: Int
+  fileSizeBytes: Int
+  sortOrder: Int
+  podcastId: String
+  episodeId: String
+  claimId: String
+  personId: String
+  organizationId: String
+  productId: String
+  compoundId: String
+  labTestId: String
+  biomarkerId: String
+  caseStudyId: String
+}
+
+# ─── Update Inputs ─────────────────────────────────────────────────────────
+
+input PodcastUpdateInput {
+  title: String
+  subtitle: StringNullableOperationInput
+  description: StringNullableOperationInput
+  rssUrl: StringNullableOperationInput
+  websiteUrl: StringNullableOperationInput
+  hostName: StringNullableOperationInput
+  language: StringNullableOperationInput
+  isPublished: Boolean
+  tags: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input EpisodeUpdateInput {
+  title: String
+  episodeNumber: IntNullableOperationInput
+  seasonNumber: IntNullableOperationInput
+  channelName: StringNullableOperationInput
+  summary: StringNullableOperationInput
+  description: StringNullableOperationInput
+  transcript: StringNullableOperationInput
+  transcriptSourceUrl: StringNullableOperationInput
+  audioUrl: StringNullableOperationInput
+  videoUrl: StringNullableOperationInput
+  publishedAt: DateTimeNullableOperationInput
+  durationSeconds: IntNullableOperationInput
+  isPublished: Boolean
+  webPageSummary: StringNullableOperationInput
+  summaryShort: StringNullableOperationInput
+  summaryDetailed: StringNullableOperationInput
+  publishedSummary: StringNullableOperationInput
+  episodePageUrl: StringNullableOperationInput
+  episodeTranscriptUrl: StringNullableOperationInput
+  youtubeVideoId: StringNullableOperationInput
+  youtubeEmbedUrl: StringNullableOperationInput
+  youtubeWatchUrl: StringNullableOperationInput
+  s3TranscriptKey: StringNullableOperationInput
+  s3TranscriptUrl: StringNullableOperationInput
+  transcriptStatus: TranscriptStatus
+  transcriptSha256: StringNullableOperationInput
+  topicPrimary: StringNullableOperationInput
+  topicSecondary: StringListOperationInput
+  topicConcepts: StringListOperationInput
+  enrichmentStage1Status: PipelineStatus
+  enrichmentStage2Status: PipelineStatus
+  publishStatus: PublishStatus
+  tags: StringListOperationInput
+  keyTakeaways: StringListOperationInput
+  topics: StringListOperationInput
+  webPageTimelines: JSON
+  guests: PersonToManyRelationUpdateInput
+  sponsorOrganizations: OrganizationToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input ClaimUpdateInput {
+  text: String
+  evidenceExcerpt: StringNullableOperationInput
+  claimType: ClaimType
+  stance: ClaimStance
+  claimConfidence: ClaimConfidence
+  startTimeSeconds: IntNullableOperationInput
+  endTimeSeconds: IntNullableOperationInput
+  sourceUrl: StringNullableOperationInput
+  tags: StringListOperationInput
+  evidenceUrls: StringListOperationInput
+  speaker: PersonToOneRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input PersonUpdateInput {
+  fullName: String
+  firstName: StringNullableOperationInput
+  lastName: StringNullableOperationInput
+  title: StringNullableOperationInput
+  bio: StringNullableOperationInput
+  websiteUrl: StringNullableOperationInput
+  linkedinUrl: StringNullableOperationInput
+  xUrl: StringNullableOperationInput
+  aliases: StringListOperationInput
+  expertiseAreas: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input OrganizationUpdateInput {
+  name: String
+  legalName: StringNullableOperationInput
+  description: StringNullableOperationInput
+  websiteUrl: StringNullableOperationInput
+  headquarters: StringNullableOperationInput
+  foundedYear: IntNullableOperationInput
+  annualRevenue: FloatNullableOperationInput
+  stockTicker: StringNullableOperationInput
+  employeeCount: IntNullableOperationInput
+  organizationType: OrganizationType
+  tags: StringListOperationInput
+  aliases: StringListOperationInput
+  domains: StringListOperationInput
+  owners: PersonToManyRelationUpdateInput
+  executives: PersonToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input ProductUpdateInput {
+  name: String
+  recommendedUse: StringNullableOperationInput
+  description: StringNullableOperationInput
+  category: StringNullableOperationInput
+  sku: StringNullableOperationInput
+  productUrl: StringNullableOperationInput
+  price: DecimalNullableOperationInput
+  currency: StringNullableOperationInput
+  isActive: Boolean
+  isLabTestPanelDefinition: Boolean
+  tags: StringListOperationInput
+  categories: StringListOperationInput
+  benefits: StringListOperationInput
+  organization: OrganizationToOneRelationUpdateInput
+  containsCompounds: CompoundToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input CompoundUpdateInput {
+  name: String
+  description: StringNullableOperationInput
+  canonicalName: StringNullableOperationInput
+  externalRef: StringNullableOperationInput
+  aliases: StringListOperationInput
+  mechanisms: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input LabTestUpdateInput {
+  name: String
+  description: StringNullableOperationInput
+  labName: StringNullableOperationInput
+  reportUrl: StringNullableOperationInput
+  testedAt: DateTimeNullableOperationInput
+  sampleType: StringNullableOperationInput
+  tags: StringListOperationInput
+  product: ProductToOneRelationUpdateInput
+  organization: OrganizationToOneRelationUpdateInput
+  testsBiomarkers: BiomarkerToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input BiomarkerUpdateInput {
+  name: String
+  description: StringNullableOperationInput
+  unit: StringNullableOperationInput
+  category: StringNullableOperationInput
+  referenceRange: StringNullableOperationInput
+  referenceAgeMin: IntNullableOperationInput
+  referenceAgeMax: IntNullableOperationInput
+  referenceRangeLow: FloatNullableOperationInput
+  referenceRangeMax: FloatNullableOperationInput
+  aliases: StringListOperationInput
+  relatedSystems: StringListOperationInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input CaseStudyUpdateInput {
+  title: String
+  description: StringNullableOperationInput
+  studyType: StringNullableOperationInput
+  publicationDate: DateTimeNullableOperationInput
+  sourceUrl: StringNullableOperationInput
+  doi: StringNullableOperationInput
+  journal: StringNullableOperationInput
+  outcomeSummary: StringNullableOperationInput
+  fullTextSummary: StringNullableOperationInput
+  tags: StringListOperationInput
+  keywords: StringListOperationInput
+  businessSponsors: OrganizationToManyRelationUpdateInput
+  referencedByOrganizations: OrganizationToManyRelationUpdateInput
+  media: MediaToManyRelationUpdateInput
+}
+
+input MediaUpdateInput {
+  url: String
+  type: MediaType
+  mimeType: StringNullableOperationInput
+  title: StringNullableOperationInput
+  altText: StringNullableOperationInput
+  caption: StringNullableOperationInput
+  width: IntNullableOperationInput
+  height: IntNullableOperationInput
+  durationSeconds: IntNullableOperationInput
+  fileSizeBytes: IntNullableOperationInput
+  sortOrder: Int
+}
+
+# ─── Queries ────────────────────────────────────────────────────────────────
+
+# ─── Search Queries ──────────────────────────────────────────────────────────
+# On all *SearchInput types: omit `limit` for the default page size (20).
+# Pass `limit: null` to return every matching row (after `offset`). `offset` may be 0.
+
+enum SearchMode {
+  NONE
+  LEXICAL
+  SEMANTIC
+  HYBRID
+}
+
+input PodcastSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  isPublished: Boolean
+  language: String
+}
+
+type PodcastSearchHit {
+  podcast: Podcast!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type PodcastSearchResult {
+  items: [PodcastSearchHit!]!
+  total: Int!
+}
+
+input EpisodeSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  podcastId: ID
+  isPublished: Boolean
+  publishStatus: PublishStatus
+  transcriptStatus: TranscriptStatus
+  episodeNumber: Int
+  seasonNumber: Int
+}
+
+type EpisodeSearchHit {
+  episode: Episode!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type EpisodeSearchResult {
+  items: [EpisodeSearchHit!]!
+  total: Int!
+}
+
+input ClaimSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  episodeId: ID
+  speakerId: ID
+  claimType: ClaimType
+  stance: ClaimStance
+  claimConfidence: ClaimConfidence
+}
+
+type ClaimSearchHit {
+  claim: Claim!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type ClaimSearchResult {
+  items: [ClaimSearchHit!]!
+  total: Int!
+}
+
+input PersonSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  title: String
+}
+
+type PersonSearchHit {
+  person: Person!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type PersonSearchResult {
+  items: [PersonSearchHit!]!
+  total: Int!
+}
+
+input OrganizationSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  organizationType: OrganizationType
+}
+
+type OrganizationSearchHit {
+  organization: Organization!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type OrganizationSearchResult {
+  items: [OrganizationSearchHit!]!
+  total: Int!
+}
+
+input ProductSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  organizationId: ID
+  isActive: Boolean
+  isLabTestPanelDefinition: Boolean
+  category: String
+  currency: String
+}
+
+type ProductSearchHit {
+  product: Product!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type ProductSearchResult {
+  items: [ProductSearchHit!]!
+  total: Int!
+}
+
+input CompoundSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  externalRef: String
+}
+
+type CompoundSearchHit {
+  compound: Compound!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type CompoundSearchResult {
+  items: [CompoundSearchHit!]!
+  total: Int!
+}
+
+input LabTestSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  productId: ID
+  organizationId: ID
+  sampleType: String
+  labName: String
+}
+
+type LabTestSearchHit {
+  labTest: LabTest!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type LabTestSearchResult {
+  items: [LabTestSearchHit!]!
+  total: Int!
+}
+
+input BiomarkerSearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  unit: String
+  category: String
+}
+
+type BiomarkerSearchHit {
+  biomarker: Biomarker!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type BiomarkerSearchResult {
+  items: [BiomarkerSearchHit!]!
+  total: Int!
+}
+
+input CaseStudySearchInput {
+  mode: SearchMode = NONE
+  query: String
+  limit: Int = 20
+  offset: Int = 0
+  studyType: String
+  journal: String
+  doi: String
+}
+
+type CaseStudySearchHit {
+  caseStudy: CaseStudy!
+  lexicalScore: Float
+  semanticScore: Float
+  hybridScore: Float
+}
+
+type CaseStudySearchResult {
+  items: [CaseStudySearchHit!]!
+  total: Int!
+}
+
+type Query {
+  podcast(id: ID, slug: String): Podcast
+  podcasts(input: PodcastSearchInput): PodcastSearchResult!
+
+  episode(id: ID, slug: String, episodePageUrl: String): Episode
+  episodes(input: EpisodeSearchInput): EpisodeSearchResult!
+
+  claim(id: ID): Claim
+  claims(input: ClaimSearchInput): ClaimSearchResult!
+
+  person(id: ID, slug: String): Person
+  persons(input: PersonSearchInput): PersonSearchResult!
+
+  organization(id: ID, slug: String): Organization
+  organizations(input: OrganizationSearchInput): OrganizationSearchResult!
+
+  product(id: ID, slug: String): Product
+  products(input: ProductSearchInput): ProductSearchResult!
+
+  compound(id: ID, slug: String): Compound
+  compounds(input: CompoundSearchInput): CompoundSearchResult!
+
+  labTest(id: ID, slug: String): LabTest
+  labTests(input: LabTestSearchInput): LabTestSearchResult!
+
+  biomarker(id: ID, slug: String): Biomarker
+  biomarkers(input: BiomarkerSearchInput): BiomarkerSearchResult!
+
+  caseStudy(id: ID, slug: String): CaseStudy
+  caseStudies(input: CaseStudySearchInput): CaseStudySearchResult!
+
+  media(id: ID): Media
+}
+
+# ─── Mutations ──────────────────────────────────────────────────────────────
+
+type Mutation {
+  createPodcast(
+    data: PodcastCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Podcast!
+  updatePodcast(
+    where: PodcastWhereUniqueInput!
+    data: PodcastUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Podcast!
+  deletePodcast(where: PodcastWhereUniqueInput!): Podcast!
+
+  createEpisode(
+    data: EpisodeCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Episode!
+  updateEpisode(
+    where: EpisodeWhereUniqueInput!
+    data: EpisodeUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Episode!
+  deleteEpisode(where: EpisodeWhereUniqueInput!): Episode!
+
+  createClaim(
+    data: ClaimCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Claim!
+  updateClaim(
+    where: ClaimWhereUniqueInput!
+    data: ClaimUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Claim!
+  deleteClaim(where: ClaimWhereUniqueInput!): Claim!
+
+  createPerson(
+    data: PersonCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Person!
+  updatePerson(
+    where: PersonWhereUniqueInput!
+    data: PersonUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Person!
+  deletePerson(where: PersonWhereUniqueInput!): Person!
+
+  createOrganization(
+    data: OrganizationCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Organization!
+  updateOrganization(
+    where: OrganizationWhereUniqueInput!
+    data: OrganizationUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Organization!
+  deleteOrganization(where: OrganizationWhereUniqueInput!): Organization!
+
+  createProduct(
+    data: ProductCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Product!
+  updateProduct(
+    where: ProductWhereUniqueInput!
+    data: ProductUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Product!
+  deleteProduct(where: ProductWhereUniqueInput!): Product!
+
+  createCompound(
+    data: CompoundCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Compound!
+  updateCompound(
+    where: CompoundWhereUniqueInput!
+    data: CompoundUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Compound!
+  deleteCompound(where: CompoundWhereUniqueInput!): Compound!
+
+  createLabTest(
+    data: LabTestCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): LabTest!
+  updateLabTest(
+    where: LabTestWhereUniqueInput!
+    data: LabTestUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): LabTest!
+  deleteLabTest(where: LabTestWhereUniqueInput!): LabTest!
+
+  createBiomarker(
+    data: BiomarkerCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Biomarker!
+  updateBiomarker(
+    where: BiomarkerWhereUniqueInput!
+    data: BiomarkerUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): Biomarker!
+  deleteBiomarker(where: BiomarkerWhereUniqueInput!): Biomarker!
+
+  createCaseStudy(
+    data: CaseStudyCreateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): CaseStudy!
+  updateCaseStudy(
+    where: CaseStudyWhereUniqueInput!
+    data: CaseStudyUpdateInput!
+    embedding: EmbeddingWriteOptionsInput
+  ): CaseStudy!
+  deleteCaseStudy(where: CaseStudyWhereUniqueInput!): CaseStudy!
+
+  createMedia(data: MediaCreateInput!): Media!
+  updateMedia(where: MediaWhereUniqueInput!, data: MediaUpdateInput!): Media!
+  deleteMedia(where: MediaWhereUniqueInput!): Media!
+}
