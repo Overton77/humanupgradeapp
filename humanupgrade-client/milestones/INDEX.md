@@ -6,7 +6,7 @@ Operational dashboard. The strategic view lives in [docs/10 — Scope & Roadmap]
 
 | ID | Name | Status | Plan | Started | Done |
 |---|---|---|---|---|---|
-| **M0** | Foundation (monorepo, Vercel, public entity pages) | 🟡 in-progress | [plan](M0-foundation/plan.md) | 2026-04-17 | — |
+| **M0** | Foundation (monorepo, Vercel, public entity pages) | ✅ done | [plan](M0-foundation/plan.md) · [delta](M0-foundation/delta.md) | 2026-04-17 | 2026-04-18 |
 | M1 | Auth & library shell (Clerk + saves + notes) | ⬜ — | — | — | — |
 | M2 | Assistant v0 — interactive | ⬜ — | — | — | — |
 | M2.5 | Durable assistant (Workflow SDK) | ⬜ — | — | — | — |
