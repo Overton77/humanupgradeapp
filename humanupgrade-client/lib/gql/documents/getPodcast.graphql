@@ -1,0 +1,10 @@
+query GetPodcast($slug: String!) {
+  podcast(slug: $slug) {
+    ...PodcastCardFields
+    rssUrl
+    isPublished
+    episodes {
+      ...EpisodeCardFields
+    }
+  }
+}

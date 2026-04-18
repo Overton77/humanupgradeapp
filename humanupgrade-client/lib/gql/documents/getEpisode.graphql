@@ -1,0 +1,39 @@
+# Episode detail page (the M0 reference implementation).
+# Loads the episode + 1-hop relations in a single round-trip.
+
+query GetEpisode($slug: String!) {
+  episode(slug: $slug) {
+    ...EpisodeCardFields
+    podcastId
+    podcast {
+      ...PodcastCardFields
+    }
+    summary
+    description
+    transcript
+    summaryDetailed
+    publishedSummary
+    keyTakeaways
+    youtubeVideoId
+    youtubeEmbedUrl
+    audioUrl
+    videoUrl
+    publishStatus
+    transcriptStatus
+
+    sponsorOrganizations {
+      ...OrganizationCardFields
+    }
+    guests {
+      ...PersonCardFields
+    }
+    claims {
+      ...ClaimCardFields
+      speaker {
+        id
+        slug
+        fullName
+      }
+    }
+  }
+}

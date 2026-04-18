@@ -1,0 +1,10 @@
+query GetProduct($slug: String!) {
+  product(slug: $slug) {
+    ...ProductCardFields
+    benefits
+    categories
+    organization { ...OrganizationCardFields }
+    containsCompounds { ...CompoundCardFields }
+    labTests { ...LabTestCardFields }
+  }
+}

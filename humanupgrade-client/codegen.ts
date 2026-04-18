@@ -21,12 +21,21 @@ const SCHEMA_URL =
 const config: CodegenConfig = {
   overwrite: true,
   schema: SCHEMA_URL,
-  documents: ['app/**/*.{ts,tsx,graphql}', 'components/**/*.{ts,tsx,graphql}', 'lib/**/*.{ts,tsx,graphql}'],
+  documents: [
+    'lib/gql/documents/**/*.graphql',
+    'app/**/*.{ts,tsx,graphql}',
+    'components/**/*.{ts,tsx,graphql}',
+    '!lib/gql/__generated__/**',
+  ],
   generates: {
-    'lib/gql/': {
+    'lib/gql/__generated__/': {
       preset: 'client',
       presetConfig: {
         gqlTagName: 'gql',
+        // Fragment masking adds a `useFragment` indirection that's overkill
+        // for our use. Disable it so fragment fields are accessible directly
+        // on the parent query type.
+        fragmentMasking: false,
       },
       config: {
         useTypeImports: true,

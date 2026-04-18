@@ -1,0 +1,13 @@
+query GetClaim($id: ID!) {
+  claim(id: $id) {
+    ...ClaimCardFields
+    evidenceUrls
+    episode {
+      id
+      slug
+      title
+      podcast { id slug title }
+    }
+    speaker { ...PersonCardFields }
+  }
+}

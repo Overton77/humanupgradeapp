@@ -1,0 +1,11 @@
+query GetPerson($slug: String!) {
+  person(slug: $slug) {
+    ...PersonCardFields
+    aliases
+    xUrl
+    guestEpisodes { ...EpisodeCardFields }
+    spokenClaims { ...ClaimCardFields }
+    ownedOrganizations { ...OrganizationCardFields }
+    executiveOrganizations { ...OrganizationCardFields }
+  }
+}

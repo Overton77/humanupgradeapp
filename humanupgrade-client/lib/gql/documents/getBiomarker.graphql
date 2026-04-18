@@ -1,0 +1,9 @@
+query GetBiomarker($slug: String!) {
+  biomarker(slug: $slug) {
+    ...BiomarkerCardFields
+    referenceAgeMin
+    referenceAgeMax
+    labTests { ...LabTestCardFields }
+    compounds { ...CompoundCardFields }
+  }
+}

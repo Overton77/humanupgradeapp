@@ -1,0 +1,8 @@
+query GetLabTest($slug: String!) {
+  labTest(slug: $slug) {
+    ...LabTestCardFields
+    organization { ...OrganizationCardFields }
+    product { ...ProductCardFields }
+    testsBiomarkers { ...BiomarkerCardFields }
+  }
+}

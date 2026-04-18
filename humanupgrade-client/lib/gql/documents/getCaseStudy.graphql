@@ -1,0 +1,8 @@
+query GetCaseStudy($slug: String!) {
+  caseStudy(slug: $slug) {
+    ...CaseStudyCardFields
+    fullTextSummary
+    businessSponsors { ...OrganizationCardFields }
+    referencedByOrganizations { ...OrganizationCardFields }
+  }
+}

@@ -43,8 +43,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# generated graphql
-/lib/gql/
+# generated graphql (codegen output; the source-of-truth .graphql docs live in lib/gql/documents/)
+/lib/gql/__generated__/
 
 # AI Elements components are owned-in-repo BUT we may want to commit; track by default.
 

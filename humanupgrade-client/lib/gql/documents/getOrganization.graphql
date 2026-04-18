@@ -1,0 +1,17 @@
+query GetOrganization($slug: String!) {
+  organization(slug: $slug) {
+    ...OrganizationCardFields
+    aliases
+    domains
+    annualRevenue
+    employeeCount
+    stockTicker
+    products { ...ProductCardFields }
+    owners { ...PersonCardFields }
+    executives { ...PersonCardFields }
+    labTests { ...LabTestCardFields }
+    sponsoredEpisodes { ...EpisodeCardFields }
+    referencedCaseStudies { ...CaseStudyCardFields }
+    businessSponsoredCases { ...CaseStudyCardFields }
+  }
+}

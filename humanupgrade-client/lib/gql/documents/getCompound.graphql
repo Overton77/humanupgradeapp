@@ -1,0 +1,8 @@
+query GetCompound($slug: String!) {
+  compound(slug: $slug) {
+    ...CompoundCardFields
+    externalRef
+    products { ...ProductCardFields }
+    biomarkers { ...BiomarkerCardFields }
+  }
+}

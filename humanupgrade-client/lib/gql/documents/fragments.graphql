@@ -1,0 +1,133 @@
+# Reusable fragments. Keep these tight — pages compose what they need.
+
+fragment EpisodeCardFields on Episode {
+  id
+  slug
+  title
+  episodeNumber
+  seasonNumber
+  publishedAt
+  durationSeconds
+  webPageSummary
+  summaryShort
+  topicPrimary
+  tags
+  topics
+  youtubeWatchUrl
+  episodePageUrl
+}
+
+fragment PodcastCardFields on Podcast {
+  id
+  slug
+  title
+  subtitle
+  description
+  hostName
+  websiteUrl
+  language
+  tags
+}
+
+fragment PersonCardFields on Person {
+  id
+  slug
+  fullName
+  title
+  bio
+  websiteUrl
+  linkedinUrl
+  expertiseAreas
+}
+
+fragment OrganizationCardFields on Organization {
+  id
+  slug
+  name
+  legalName
+  description
+  websiteUrl
+  organizationType
+  headquarters
+  foundedYear
+  tags
+}
+
+fragment ProductCardFields on Product {
+  id
+  slug
+  name
+  description
+  category
+  recommendedUse
+  price
+  currency
+  productUrl
+  isActive
+  tags
+}
+
+fragment CompoundCardFields on Compound {
+  id
+  slug
+  name
+  description
+  canonicalName
+  aliases
+  mechanisms
+}
+
+fragment LabTestCardFields on LabTest {
+  id
+  slug
+  name
+  description
+  labName
+  sampleType
+  testedAt
+  reportUrl
+  tags
+}
+
+fragment BiomarkerCardFields on Biomarker {
+  id
+  slug
+  name
+  description
+  unit
+  category
+  referenceRange
+  referenceRangeLow
+  referenceRangeMax
+  aliases
+  relatedSystems
+}
+
+fragment CaseStudyCardFields on CaseStudy {
+  id
+  slug
+  title
+  description
+  studyType
+  publicationDate
+  sourceUrl
+  doi
+  journal
+  outcomeSummary
+  tags
+  keywords
+}
+
+fragment ClaimCardFields on Claim {
+  id
+  text
+  evidenceExcerpt
+  claimType
+  stance
+  claimConfidence
+  startTimeSeconds
+  endTimeSeconds
+  sourceUrl
+  tags
+  probableSpeaker
+}

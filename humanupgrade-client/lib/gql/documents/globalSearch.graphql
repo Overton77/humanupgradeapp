@@ -1,0 +1,81 @@
+# Global cross-entity hybrid search. Used by:
+#   - GlobalSearchDialog (header ⌘K)
+#   - /search?q=... results page
+
+query GlobalSearch($input: GlobalSearchInput!) {
+  search(input: $input) {
+    query
+    totalAcrossTypes
+
+    episodes {
+      total
+      items {
+        hybridScore
+        episode { ...EpisodeCardFields }
+      }
+    }
+    podcasts {
+      total
+      items {
+        hybridScore
+        podcast { ...PodcastCardFields }
+      }
+    }
+    claims {
+      total
+      items {
+        hybridScore
+        claim { ...ClaimCardFields }
+      }
+    }
+    persons {
+      total
+      items {
+        hybridScore
+        person { ...PersonCardFields }
+      }
+    }
+    organizations {
+      total
+      items {
+        hybridScore
+        organization { ...OrganizationCardFields }
+      }
+    }
+    products {
+      total
+      items {
+        hybridScore
+        product { ...ProductCardFields }
+      }
+    }
+    compounds {
+      total
+      items {
+        hybridScore
+        compound { ...CompoundCardFields }
+      }
+    }
+    labTests {
+      total
+      items {
+        hybridScore
+        labTest { ...LabTestCardFields }
+      }
+    }
+    biomarkers {
+      total
+      items {
+        hybridScore
+        biomarker { ...BiomarkerCardFields }
+      }
+    }
+    caseStudies {
+      total
+      items {
+        hybridScore
+        caseStudy { ...CaseStudyCardFields }
+      }
+    }
+  }
+}
