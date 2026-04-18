@@ -1240,6 +1240,51 @@ type Query {
   caseStudies(input: CaseStudySearchInput): CaseStudySearchResult!
 
   media(id: ID): Media
+
+  # ─── Global multi-entity search ─────────────────────────────────────────
+  # Cross-entity hybrid search. Fans out to the per-entity hybrid search
+  # services and groups results by entity type.
+  #
+  # `types` filters which entity buckets to query — omit to search them all.
+  # `perTypeLimit` caps results per bucket (default 5).
+  search(input: GlobalSearchInput!): GlobalSearchResult!
+}
+
+# ─── Global Search ───────────────────────────────────────────────────────────
+
+enum GlobalSearchEntityType {
+  PODCAST
+  EPISODE
+  CLAIM
+  PERSON
+  ORGANIZATION
+  PRODUCT
+  COMPOUND
+  LAB_TEST
+  BIOMARKER
+  CASE_STUDY
+}
+
+input GlobalSearchInput {
+  query: String!
+  mode: SearchMode = HYBRID
+  perTypeLimit: Int = 5
+  types: [GlobalSearchEntityType!]
+}
+
+type GlobalSearchResult {
+  query: String!
+  podcasts: PodcastSearchResult!
+  episodes: EpisodeSearchResult!
+  claims: ClaimSearchResult!
+  persons: PersonSearchResult!
+  organizations: OrganizationSearchResult!
+  products: ProductSearchResult!
+  compounds: CompoundSearchResult!
+  labTests: LabTestSearchResult!
+  biomarkers: BiomarkerSearchResult!
+  caseStudies: CaseStudySearchResult!
+  totalAcrossTypes: Int!
 }
 
 # ─── Mutations ──────────────────────────────────────────────────────────────

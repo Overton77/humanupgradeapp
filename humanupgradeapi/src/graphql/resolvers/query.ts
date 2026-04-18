@@ -35,6 +35,7 @@ import {
   type ProductSearchInput,
 } from "../../search/entitySearchService.js";
 import { resolveEpisodeWhereUnique, resolveWhere } from "./helpers.js";
+import { runGlobalSearch, type GlobalSearchInput } from "./globalSearch.js";
 
 /** Root `Query` field parent is always `null` in GraphQL execution. */
 type QueryRoot = null;
@@ -223,5 +224,15 @@ export const queryResolvers = {
       });
       return media;
     },
+
+    /**
+     * Cross-entity hybrid search. Fans out to every per-entity hybrid
+     * search service in parallel and groups the results.
+     */
+    search: async (
+      _parent: QueryRoot,
+      args: { input: GlobalSearchInput },
+      ctx: GraphQLContext,
+    ) => runGlobalSearch(ctx.prisma, args.input),
   },
 };
