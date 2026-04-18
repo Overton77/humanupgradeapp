@@ -1,0 +1,13 @@
+query ListClaims($input: ClaimSearchInput!) {
+  claims(input: $input) {
+    total
+    items {
+      hybridScore
+      claim {
+        ...ClaimCardFields
+        episode { id slug title }
+        speaker { id slug fullName }
+      }
+    }
+  }
+}

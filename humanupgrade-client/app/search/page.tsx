@@ -116,11 +116,7 @@ async function SearchResultsServer({
       <p className="text-xs text-muted-foreground">
         {data.search.totalAcrossTypes.toLocaleString()} result{data.search.totalAcrossTypes === 1 ? '' : 's'}
       </p>
-      <GlobalSearchResults
-        data={data.search}
-        variant="full"
-        baseHref={`/search?q=${encodeURIComponent(query)}`}
-      />
+      <GlobalSearchResults data={data.search} variant="full" query={query} />
     </>
   )
 }

@@ -1,0 +1,9 @@
+query ListPodcasts($input: PodcastSearchInput!) {
+  podcasts(input: $input) {
+    total
+    items {
+      hybridScore
+      podcast { ...PodcastCardFields }
+    }
+  }
+}

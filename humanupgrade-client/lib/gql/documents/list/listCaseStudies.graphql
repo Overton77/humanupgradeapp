@@ -1,0 +1,9 @@
+query ListCaseStudies($input: CaseStudySearchInput!) {
+  caseStudies(input: $input) {
+    total
+    items {
+      hybridScore
+      caseStudy { ...CaseStudyCardFields }
+    }
+  }
+}

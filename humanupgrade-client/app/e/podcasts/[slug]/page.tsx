@@ -38,7 +38,7 @@ export default async function PodcastPage({ params }: Props) {
             subtitle={p.subtitle ?? p.description}
             meta={p.hostName ? <>Hosted by {p.hostName}</> : null}
             actions={<EntityActions shareUrl={url} entityKind="podcast" />}
-            backHref="/search?type=podcast"
+            backHref="/e/podcasts"
             backLabel="All podcasts"
           />
         </article>

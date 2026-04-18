@@ -58,7 +58,7 @@ export default async function OrganizationPage({ params }: Props) {
                 ) : null}
               </>
             }
-            backHref="/search?type=organization"
+            backHref="/e/organizations"
             backLabel="All organizations"
           />
 

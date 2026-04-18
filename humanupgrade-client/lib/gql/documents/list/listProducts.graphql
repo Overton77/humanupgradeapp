@@ -1,0 +1,12 @@
+query ListProducts($input: ProductSearchInput!) {
+  products(input: $input) {
+    total
+    items {
+      hybridScore
+      product {
+        ...ProductCardFields
+        organization { id slug name }
+      }
+    }
+  }
+}

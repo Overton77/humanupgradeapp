@@ -107,7 +107,7 @@ export default async function EpisodePage({ params }: Props) {
             subtitle={ep.summaryShort ?? ep.webPageSummary}
             meta={meta}
             actions={<EntityActions shareUrl={url} entityKind="episode" />}
-            backHref={ep.podcast ? entityRoutes.podcast(ep.podcast.slug) : '/search?type=episode'}
+            backHref={ep.podcast ? entityRoutes.podcast(ep.podcast.slug) : '/e/episodes'}
             backLabel={ep.podcast ? `Back to ${ep.podcast.title}` : 'Back to episodes'}
           />
 

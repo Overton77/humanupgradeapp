@@ -61,7 +61,7 @@ export default async function CaseStudyPage({ params }: Props) {
                 ) : null}
               </>
             }
-            backHref="/search?type=caseStudy"
+            backHref="/e/case-studies"
             backLabel="All case studies"
           />
 

@@ -1,0 +1,9 @@
+query ListCompounds($input: CompoundSearchInput!) {
+  compounds(input: $input) {
+    total
+    items {
+      hybridScore
+      compound { ...CompoundCardFields }
+    }
+  }
+}

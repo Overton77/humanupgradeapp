@@ -1,0 +1,9 @@
+query ListOrganizations($input: OrganizationSearchInput!) {
+  organizations(input: $input) {
+    total
+    items {
+      hybridScore
+      organization { ...OrganizationCardFields }
+    }
+  }
+}

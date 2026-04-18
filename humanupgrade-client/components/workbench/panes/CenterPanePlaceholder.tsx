@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 const explorerStarters = [
-  { label: 'Episodes', href: '/search?type=episode', helper: 'Podcast deep dives' },
-  { label: 'Compounds', href: '/search?type=compound', helper: 'Mechanisms + biomarker effects' },
-  { label: 'Products', href: '/search?type=product', helper: 'What contains what' },
-  { label: 'Case studies', href: '/search?type=caseStudy', helper: 'Evidence corpus' },
-  { label: 'Biomarkers', href: '/search?type=biomarker', helper: 'What you might track' },
+  { label: 'Episodes', href: '/e/episodes', helper: 'Podcast deep dives' },
+  { label: 'Compounds', href: '/e/compounds', helper: 'Mechanisms + biomarker effects' },
+  { label: 'Products', href: '/e/products', helper: 'What contains what' },
+  { label: 'Case studies', href: '/e/case-studies', helper: 'Evidence corpus' },
+  { label: 'Biomarkers', href: '/e/biomarkers', helper: 'What you might track' },
 ] as const
 
 /**

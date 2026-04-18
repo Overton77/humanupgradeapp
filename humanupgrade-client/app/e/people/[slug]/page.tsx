@@ -57,7 +57,7 @@ export default async function PersonPage({ params }: Props) {
                 ))}
               </>
             }
-            backHref="/search?type=person"
+            backHref="/e/people"
             backLabel="All people"
           />
 

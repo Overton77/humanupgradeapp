@@ -1,0 +1,9 @@
+query ListEpisodes($input: EpisodeSearchInput!) {
+  episodes(input: $input) {
+    total
+    items {
+      hybridScore
+      episode { ...EpisodeCardFields }
+    }
+  }
+}

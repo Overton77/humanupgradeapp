@@ -88,14 +88,14 @@ function BrowseRailSection() {
 }
 
 const browseEntities = [
-  { label: 'Episodes', href: '/search?type=episode' },
-  { label: 'Compounds', href: '/search?type=compound' },
-  { label: 'Products', href: '/search?type=product' },
-  { label: 'Case studies', href: '/search?type=caseStudy' },
-  { label: 'Biomarkers', href: '/search?type=biomarker' },
-  { label: 'Claims', href: '/search?type=claim' },
-  { label: 'People', href: '/search?type=person' },
-  { label: 'Organizations', href: '/search?type=organization' },
-  { label: 'Lab tests', href: '/search?type=labTest' },
-  { label: 'Podcasts', href: '/search?type=podcast' },
+  { label: 'Episodes', href: '/e/episodes' },
+  { label: 'Compounds', href: '/e/compounds' },
+  { label: 'Products', href: '/e/products' },
+  { label: 'Case studies', href: '/e/case-studies' },
+  { label: 'Biomarkers', href: '/e/biomarkers' },
+  { label: 'Claims', href: '/e/claims' },
+  { label: 'People', href: '/e/people' },
+  { label: 'Organizations', href: '/e/organizations' },
+  { label: 'Lab tests', href: '/e/lab-tests' },
+  { label: 'Podcasts', href: '/e/podcasts' },
 ] as const

@@ -1,0 +1,12 @@
+query ListLabTests($input: LabTestSearchInput!) {
+  labTests(input: $input) {
+    total
+    items {
+      hybridScore
+      labTest {
+        ...LabTestCardFields
+        organization { id slug name }
+      }
+    }
+  }
+}

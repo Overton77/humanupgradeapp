@@ -1,0 +1,9 @@
+query ListBiomarkers($input: BiomarkerSearchInput!) {
+  biomarkers(input: $input) {
+    total
+    items {
+      hybridScore
+      biomarker { ...BiomarkerCardFields }
+    }
+  }
+}

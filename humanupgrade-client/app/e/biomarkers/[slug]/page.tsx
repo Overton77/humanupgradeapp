@@ -44,7 +44,7 @@ export default async function BiomarkerPage({ params }: Props) {
             subtitle={b.description}
             meta={meta}
             actions={<EntityActions shareUrl={url} entityKind="biomarker" />}
-            backHref="/search?type=biomarker"
+            backHref="/e/biomarkers"
             backLabel="All biomarkers"
           />
 

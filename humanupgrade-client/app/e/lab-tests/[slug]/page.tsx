@@ -59,7 +59,7 @@ export default async function LabTestPage({ params }: Props) {
                 ) : null}
               </>
             }
-            backHref="/search?type=labTest"
+            backHref="/e/lab-tests"
             backLabel="All lab tests"
           />
 

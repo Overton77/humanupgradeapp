@@ -75,7 +75,7 @@ export default async function ClaimPage({ params }: Props) {
                 ) : null}
               </>
             }
-            backHref={c.episode ? entityRoutes.episode(c.episode.slug) : '/search?type=claim'}
+            backHref={c.episode ? entityRoutes.episode(c.episode.slug) : '/e/claims'}
             backLabel={c.episode ? `Back to ${c.episode.title}` : 'Back to claims'}
           />
 

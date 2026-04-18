@@ -8,22 +8,42 @@ import { SearchResultGroup, SearchResultRow } from '@/components/search/SearchRe
  * Used by both the header dialog (compact) and the /search page (full).
  *
  * Compact mode hides empty groups + clamps to the top N items per group.
+ *
+ * "See all" links point at the per-entity index page (/e/<type>?q=...) —
+ * NOT back at /search, because /search is for cross-entity exploration
+ * while /e/<type> is for deep dives within a single entity (filters,
+ * pagination, etc.).
  */
 export function GlobalSearchResults({
   data,
   variant = 'full',
   perGroup,
-  baseHref,
+  /** The current search query string, used to build "see all" links. */
+  query,
 }: {
   data: GlobalSearchQuery['search']
   variant?: 'compact' | 'full'
   /** Cap per group; defaults: compact = 5, full = all returned items. */
   perGroup?: number
-  /** Used to build "see all" links: `${baseHref}&type=episode`. */
-  baseHref?: string
+  query?: string
 }) {
   const cap = perGroup ?? (variant === 'compact' ? 5 : Infinity)
-  const seeAll = (type: string) => baseHref ? `${baseHref}&type=${type}` : undefined
+  const seeAll = (path: string) =>
+    query && query.trim().length > 0
+      ? `${path}?q=${encodeURIComponent(query.trim())}`
+      : path
+  const see = {
+    episode: () => seeAll('/e/episodes'),
+    compound: () => seeAll('/e/compounds'),
+    product: () => seeAll('/e/products'),
+    caseStudy: () => seeAll('/e/case-studies'),
+    biomarker: () => seeAll('/e/biomarkers'),
+    claim: () => seeAll('/e/claims'),
+    person: () => seeAll('/e/people'),
+    organization: () => seeAll('/e/organizations'),
+    labTest: () => seeAll('/e/lab-tests'),
+    podcast: () => seeAll('/e/podcasts'),
+  }
 
   return (
     <div className="space-y-5">
@@ -31,7 +51,7 @@ export function GlobalSearchResults({
         label="Episodes"
         total={data.episodes.total}
         items={data.episodes.items.slice(0, cap)}
-        seeAllHref={seeAll('episode')}
+        seeAllHref={see.episode()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`ep-${i}-${hit.episode.id}`}
@@ -50,7 +70,7 @@ export function GlobalSearchResults({
         label="Compounds"
         total={data.compounds.total}
         items={data.compounds.items.slice(0, cap)}
-        seeAllHref={seeAll('compound')}
+        seeAllHref={see.compound()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`cmp-${i}-${hit.compound.id}`}
@@ -65,7 +85,7 @@ export function GlobalSearchResults({
         label="Products"
         total={data.products.total}
         items={data.products.items.slice(0, cap)}
-        seeAllHref={seeAll('product')}
+        seeAllHref={see.product()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`prd-${i}-${hit.product.id}`}
@@ -80,7 +100,7 @@ export function GlobalSearchResults({
         label="Case studies"
         total={data.caseStudies.total}
         items={data.caseStudies.items.slice(0, cap)}
-        seeAllHref={seeAll('caseStudy')}
+        seeAllHref={see.caseStudy()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`cs-${i}-${hit.caseStudy.id}`}
@@ -95,7 +115,7 @@ export function GlobalSearchResults({
         label="Biomarkers"
         total={data.biomarkers.total}
         items={data.biomarkers.items.slice(0, cap)}
-        seeAllHref={seeAll('biomarker')}
+        seeAllHref={see.biomarker()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`bm-${i}-${hit.biomarker.id}`}
@@ -110,7 +130,7 @@ export function GlobalSearchResults({
         label="Claims"
         total={data.claims.total}
         items={data.claims.items.slice(0, cap)}
-        seeAllHref={seeAll('claim')}
+        seeAllHref={see.claim()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`cl-${i}-${hit.claim.id}`}
@@ -125,7 +145,7 @@ export function GlobalSearchResults({
         label="People"
         total={data.persons.total}
         items={data.persons.items.slice(0, cap)}
-        seeAllHref={seeAll('person')}
+        seeAllHref={see.person()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`pn-${i}-${hit.person.id}`}
@@ -140,7 +160,7 @@ export function GlobalSearchResults({
         label="Organizations"
         total={data.organizations.total}
         items={data.organizations.items.slice(0, cap)}
-        seeAllHref={seeAll('organization')}
+        seeAllHref={see.organization()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`org-${i}-${hit.organization.id}`}
@@ -155,7 +175,7 @@ export function GlobalSearchResults({
         label="Lab tests"
         total={data.labTests.total}
         items={data.labTests.items.slice(0, cap)}
-        seeAllHref={seeAll('labTest')}
+        seeAllHref={see.labTest()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`lt-${i}-${hit.labTest.id}`}
@@ -170,7 +190,7 @@ export function GlobalSearchResults({
         label="Podcasts"
         total={data.podcasts.total}
         items={data.podcasts.items.slice(0, cap)}
-        seeAllHref={seeAll('podcast')}
+        seeAllHref={see.podcast()}
         renderItem={(hit, i) => (
           <SearchResultRow
             key={`pc-${i}-${hit.podcast.id}`}

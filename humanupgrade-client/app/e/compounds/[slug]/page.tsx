@@ -38,7 +38,7 @@ export default async function CompoundPage({ params }: Props) {
             subtitle={c.description}
             meta={c.canonicalName ? <>Canonical: {c.canonicalName}</> : null}
             actions={<EntityActions shareUrl={url} entityKind="compound" />}
-            backHref="/search?type=compound"
+            backHref="/e/compounds"
             backLabel="All compounds"
           />
 

@@ -68,7 +68,7 @@ export default async function ProductPage({ params }: Props) {
                 ) : null}
               </>
             }
-            backHref="/search?type=product"
+            backHref="/e/products"
             backLabel="All products"
           />
 

@@ -89,6 +89,66 @@ Branch `main` on `Overton77/humanupgradeapp`:
 - [x] Live API on :4000 reachable from the client.
 - [x] `Query.search` returns expected counts.
 
+## Post-M0 patch — entity index pages (browse-by-default fix)
+
+Shipped after M0 close to fix a misleading UX: the marketing home + workbench
+"Browse <type>" links were sending users to `/search?type=<type>` (which
+required typing a query just to load anything). They now go to dedicated
+**index pages** that load the full set paginated by default.
+
+### Added
+
+- **10 GraphQL list documents** under `lib/gql/documents/list/list<Entity>.graphql` —
+  thin wrappers over the existing per-entity hybrid search resolvers.
+- **`lib/entity-index/`**
+  - `types.ts` — `BooleanFilterSpec`, `EnumFilterSpec`, `EntityIndexParams`, page-size constants.
+  - `params.ts` — `parseEntityIndexParams`, `paramsToApiPagination`, `buildIndexHref`. Pure, no React.
+- **`components/entity-index/`**
+  - `EntityIndexShell` — page chrome with sticky controls row.
+  - `EntityIndexControls` — search input + filter bar + total count.
+  - `SearchInTypeInput` — debounced text input that mirrors `?q=`.
+  - `FilterBar` — boolean toggles + enum pill rows; URL-driven, no client state.
+  - `EntityIndexPagination` — prev/next + page indicator.
+  - `EntityIndexCard` + `EntityIndexGrid` + `EntityIndexEmpty` — uniform card layout.
+  - `EntityIndexSkeleton` — loading state.
+  - `cards/{Episode,Podcast,Compound,Product,CaseStudy,Biomarker,Claim,Person,Organization,LabTest}IndexCard.tsx`
+- **10 index routes**:
+  `app/e/{podcasts,episodes,claims,people,organizations,products,compounds,lab-tests,biomarkers,case-studies}/page.tsx`
+  Each loads paginated by default + supports per-entity text search (`?q=`)
+  + supports per-entity filters via the existing API search inputs.
+- **Per-route `loading.tsx`** for each new index route.
+
+### Changed
+
+- `app/page.tsx` browse rail → `/e/<type>` (was `/search?type=<type>`).
+- `components/workbench/panes/CenterPanePlaceholder.tsx` explorer cards → `/e/<type>`.
+- All 10 entity detail pages (`app/e/<type>/[slug-or-id]/page.tsx`) — back-link `backHref`
+  rewritten from `/search?type=<type>` to `/e/<type>`.
+- `components/search/GlobalSearchResults.tsx` — "see all" links now point at
+  `/e/<type>?q=<q>` (per-entity index) instead of `/search?type=<type>` (global search filter).
+  Prop renamed: `baseHref` → `query`. Both call sites (`GlobalSearchDialog`, `app/search/page.tsx`) updated.
+
+### Default filters per entity (out of the box)
+
+| Entity | Filters exposed in M0 |
+|---|---|
+| Episodes | `published` (boolean), `transcript` status (enum: STORED / QUEUED / MISSING / ERROR) |
+| Podcasts | `published` (boolean) |
+| Products | `active` (boolean) |
+| Claims | `stance` (enum), `confidence` (enum) |
+| Organizations | `type` (enum: BRAND / MANUFACTURER / LAB / CLINIC / RESEARCH / MEDIA / SPONSOR) |
+| Compounds, Biomarkers, Case studies, People, Lab tests | (none yet — text search only) |
+
+The architecture supports any number of filters per entity — see
+`lib/entity-index/types.ts`'s `FilterSpec` and the Episodes page for the
+reference implementation. M1 (or any future milestone) can broaden filter
+coverage with zero infra work.
+
+### Verified
+
+- `pnpm -F humanupgrade-client typecheck` — clean.
+- All 11 routes return 200: 10 indexes + `/e/episodes?q=HRV`, `/e/episodes?published=true&page=2`.
+
 ## What we punted (small, well-defined follow-ups)
 
 | Deliverable | Reason | Action needed |

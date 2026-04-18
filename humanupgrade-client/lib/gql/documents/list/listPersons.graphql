@@ -1,0 +1,9 @@
+query ListPersons($input: PersonSearchInput!) {
+  persons(input: $input) {
+    total
+    items {
+      hybridScore
+      person { ...PersonCardFields }
+    }
+  }
+}

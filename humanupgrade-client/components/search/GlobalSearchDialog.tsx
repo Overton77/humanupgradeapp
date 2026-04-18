@@ -106,7 +106,7 @@ export function GlobalSearchDialog({
                 data={data.search as GlobalSearchQuery['search']}
                 variant="compact"
                 perGroup={PER_TYPE}
-                baseHref={`/search?q=${encodeURIComponent(debounced.trim())}`}
+                query={debounced.trim()}
               />
             )
           ) : (
